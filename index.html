@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Responsive Wetterseite mit 16-Tage-Vorhersage, Unsicherheitsangaben, Favoriten und Regenradar – auf Basis freier Wetterdaten (Open-Meteo, RainViewer)." />
+  <title>Wetter · Vorhersage &amp; Radar</title>
+
+  <!-- PWA: Manifest, Farbthema, Startbild-/Icon-Angaben -->
+  <link rel="manifest" href="manifest.webmanifest" />
+  <meta name="theme-color" content="#0b62a3" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Wetter" />
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+
+  <!-- Diagrammbibliothek: Chart.js (MIT-Lizenz), lokal für Offline-PWA -->
+  <script src="vendor/chart.umd.min.js"></script>
+  <!-- Kartenbibliothek: Leaflet (BSD-2-Clause-Lizenz), lokal für Offline-PWA -->
+  <link rel="stylesheet" href="vendor/leaflet.css" />
+  <script src="vendor/leaflet.js"></script>
+
+  <link rel="stylesheet" href="css/styles.css" />
+  <script type="module" src="js/app.js"></script>
+  <script>
+    // Service Worker registrieren (PWA: Offline-Cache + Installation).
+    // Laeuft nur auf HTTPS oder localhost; scheitert er (z. B. http in einem
+    // Netzbetrieb ohne sichereren Zugriff), bleibt die App eine normale,
+    // voll funktionsfaehige Webseite.
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("sw.js").catch(() => {
+          // Stiller Fallback: ohne Service Worker ist die App einfach eine normale Webseite.
+        });
+      });
+    }
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#inhalt">Zum Inhalt springen</a>
+
+  <!-- ============================ Kopfzeile & Navigation ============================ -->
+  <header class="kopfbereich">
+    <!-- Wetter-Kulisse (rein dekorativ): Sonne/Mond, Sterne, Wolken, Regen … -->
+    <div id="himmels-kulisse" class="himmels-kulisse" aria-hidden="true"></div>
+    <div class="kopf-zeile">
+      <span class="logo" aria-hidden="true">⛅</span>
+      <h1>Wetter</h1>
+      <nav class="hauptnavigation" aria-label="Hauptnavigation">
+        <a href="#/" class="nav-link" id="nav-uebersicht">Wetterübersicht</a>
+        <a href="#/radar" class="nav-link" id="nav-radar">Regenradar</a>
+      </nav>
+    </div>
+
+    <!-- Städte-Suche mit Autovervollständigung -->
+    <div class="suchbereich">
+      <div class="suchfeld" id="suchfeld">
+        <label class="visuell-verborgen" for="sucheingabe">Stadt suchen</label>
+        <input id="sucheingabe" type="search" autocomplete="off" spellcheck="false"
+               role="combobox" aria-expanded="false" aria-controls="suchergebnisse"
+               aria-autocomplete="list" placeholder="Stadt suchen, z. B. Hamburg …" />
+        <button id="suchen-knopf" class="icon-button" type="button" aria-label="Suche ausführen">🔍</button>
+        <!-- Ergebnisliste der Autovervollständigung -->
+        <ul id="suchergebnisse" class="suchergebnisse" role="listbox"
+            aria-label="Suchvorschläge" hidden></ul>
+      </div>
+      <p id="suchstatus" class="statusmeldung" role="status" aria-live="polite"></p>
+    </div>
+
+    <!-- Favoritenleiste -->
+    <div class="favoritenbereich" aria-labelledby="favoriten-titel">
+      <span id="favoriten-titel" class="bereichs-titel">Favoriten</span>
+      <div id="favoritenliste" class="favoritenliste" role="list" aria-labelledby="favoriten-titel"></div>
+      <button id="favorit-hinzufuegen" class="chip chip-aktion" type="button"
+              title="Aktuelle Stadt zu den Favoriten hinzufügen">＋ Stadt merken</button>
+    </div>
+  </header>
+
+  <!-- =================================== Inhalt ==================================== -->
+  <main id="inhalt">
+
+    <!-- ============================ Ansicht: Übersicht ============================= -->
+    <section id="ansicht-uebersicht" class="ansicht" aria-label="Wetterübersicht">
+
+      <!-- Aktuelles Wetter (prominent über der Vorhersage) -->
+      <section class="karte aktuelle-karte" id="aktuelle-karte" aria-labelledby="aktuell-titel">
+        <h2 id="aktuell-titel" class="visuell-verborgen">Aktuelles Wetter</h2>
+        <div id="aktuell-inhalt" class="aktuell-inhalt">
+          <p class="hinweis">Stadt suchen, um das Wetter zu laden.</p>
+        </div>
+        <!-- Chips darunter: Luftfeuchte, ggf. Wassertemperatur und Wellenhöhe -->
+        <div id="meer-chips" class="meer-chips" hidden></div>
+        <p class="quellenzeile">
+          Datenquelle: <a href="https://open-meteo.com/" rel="noopener" target="_blank">Open-Meteo.com</a>
+          (<a href="https://open-meteo.com/en/terms" rel="noopener" target="_blank">CC BY 4.0</a>)
+          <span id="zuletzt-aktualisiert"></span>
+        </p>
+      </section>
+
+      <!-- sekundäre Infos: Tagesaussicht, Sonne/Mond, Gezeiten -->
+      <div class="info-raster">
+        <section class="karte info-karte" aria-labelledby="heute-titel">
+          <h2 id="heute-titel">📋 Aussichten für heute</h2>
+          <p id="heute-aussicht" class="info-text"><span class="hinweis">Erst eine Stadt suchen.</span></p>
+        </section>
+
+        <section class="karte info-karte" aria-labelledby="sonne-titel">
+          <h2 id="sonne-titel">☀️🌙 Sonne &amp; Mond</h2>
+          <div id="sonne-mond-inhalt" class="info-text"><span class="hinweis">Erst eine Stadt suchen.</span></div>
+        </section>
+
+        <section class="karte info-karte" aria-labelledby="gezeiten-titel">
+          <h2 id="gezeiten-titel">🌊 Ebbe &amp; Flut</h2>
+          <label class="visuell-verborgen" for="gezeiten-pegel">Pegel auswählen</label>
+          <select id="gezeiten-pegel" class="gezeiten-pegel"></select>
+          <div id="gezeiten-inhalt" class="info-text"><span class="hinweis">Pegel wird geladen …</span></div>
+          <p class="quellenzeile">Amtliche Gezeitenvorausberechnung:
+            <a href="https://gezeiten.bsh.de/" rel="noopener" target="_blank">BSH</a> (Bundesamt für Seeschifffahrt und Hydrographie)</p>
+        </section>
+      </div>
+
+      <section class="karte" aria-labelledby="tage-titel">
+        <h2 id="tage-titel" class="visuell-verborgen">Tage auswählen</h2>
+        <div id="tagesspule" class="tagesspule" role="tablist" aria-label="Vorhersagetag wählen"></div>
+
+        <!-- Zeitraum-Umschalter -->
+        <div class="zeitraumleiste" role="group" aria-label="Zeitraum der Vorhersage">
+          <button class="zeitraum-knopf" data-zeitraum="tag" aria-pressed="true">Ausgewählter Tag</button>
+          <button class="zeitraum-knopf" data-zeitraum="3" aria-pressed="false">3 Tage</button>
+          <button class="zeitraum-knopf" data-zeitraum="7" aria-pressed="false">1 Woche</button>
+          <button class="zeitraum-knopf" data-zeitraum="16" aria-pressed="false">16 Tage</button>
+        </div>
+        <p id="zeitraum-hinweis" class="hinweis" role="status"></p>
+      </section>
+
+      <!-- Diagramme: Temperatur (mit Niederschlag) und Wind untereinander, volle Breite -->
+      <div id="diagramm-bereich" class="diagramm-raster" hidden>
+        <section class="karte diagramm-karte" aria-labelledby="temp-titel">
+          <h2 id="temp-titel">Temperatur &amp; Niederschlag</h2>
+          <p class="diagramm-legende-hinweis">
+            Orange = über 0&nbsp;°C, Cyan = unter 0&nbsp;°C · Balken dunkelblau = Niederschlag (rechte Achse, 0–6&nbsp;mm) · ⚡ = mehr als 6&nbsp;mm
+          </p>
+          <div class="diagramm-rahmen"><canvas id="diagramm-temperatur" role="img"
+               aria-label="Temperaturverlauf (orange über null Grad, cyan darunter) mit Niederschlagsbalken und Unsicherheitsbereichen"></canvas></div>
+        </section>
+
+        <section class="karte diagramm-karte" aria-labelledby="wind-titel">
+          <div class="wind-kopf">
+            <h2 id="wind-titel">Windgeschwindigkeit</h2>
+            <!-- Kleine Windrose als Orientierungshilfe: Norden oben.
+                 Pfeile im Diagramm zeigen die Herkunftsrichtung des Windes an. -->
+            <span class="windrose" title="Windrose zur Orientierung: Norden oben. Die Pfeile zeigen die Herkunftsrichtung des Windes.">
+              <svg viewBox="0 0 40 40" width="38" height="38" role="img"
+                   aria-label="Windrose mit Norden oben">
+                <circle cx="20" cy="20" r="13.5" fill="#f7fafd" stroke="#5c6b7a" stroke-width="1.2"/>
+                <!-- Nordhälfte rot, Südhälfte grau wie bei Kompassen -->
+                <polygon points="20,8.5 17.2,20 22.8,20" fill="#c0304a"/>
+                <polygon points="20,31.5 17.2,20 22.8,20" fill="#9aa7b4"/>
+                <text x="20" y="6.6"  text-anchor="middle" font-size="7.5" font-weight="700" fill="#1c2733">N</text>
+                <text x="37"  y="22.6" text-anchor="middle" font-size="7" fill="#4d5c6b">O</text>
+                <text x="20" y="39.4" text-anchor="middle" font-size="7" fill="#4d5c6b">S</text>
+                <text x="3"   y="22.6" text-anchor="middle" font-size="7" fill="#4d5c6b">W</text>
+              </svg>
+              <span class="windrose-text">Pfeile zeigen die Herkunftsrichtung des Windes an</span>
+            </span>
+          </div>
+          <div class="diagramm-rahmen diagramm-rahmen-kurz"><canvas id="diagramm-wind" role="img"
+               aria-label="Windgeschwindigkeit in Metern pro Sekunde als hellgrüne Linie mit Richtungspfeilen und Unsicherheitsbereich"></canvas></div>
+        </section>
+      </div>
+
+      <!-- Fehler- und Ladezustände -->
+      <div id="statusbereich" class="statusbereich" role="alert" aria-live="assertive" hidden>
+        <p id="statustext"></p>
+        <button id="status-wiederholen" class="sekundaerer-knopf" type="button" hidden>Erneut versuchen</button>
+      </div>
+    </section>
+
+    <!-- ============================ Ansicht: Regenradar ============================= -->
+    <section id="ansicht-radar" class="ansicht" aria-label="Regenradar" hidden>
+      <div class="radar-umgebung">
+        <!-- Zeitsteuerung -->
+        <div class="radar-steuerung karte">
+          <div class="radar-zeitreihe">
+            <button id="radar-abspielen" class="icon-button" type="button"
+                    aria-label="Zeitraffer abspielen" title="Zeitraffer abspielen/stoppen">▶</button>
+            <label class="visuell-verborgen" for="radar-slider">Zeitpunkt der Radaraufnahme wählen</label>
+            <input id="radar-slider" type="range" min="0" max="0" value="0" step="1" />
+          </div>
+          <p class="radar-zeitpunkt" id="radar-zeitpunkt" role="status" aria-live="polite">
+            Radardaten werden geladen …
+          </p>
+          <!-- Extra-Ebene: Modell-Vorschau der nächsten Stunden -->
+          <div class="radar-ebenen" role="group" aria-label="Zusatzebenen der Radarkarte">
+            <span class="legenden-titel">Vorschau (Modell, keine amtliche Nowcast)</span>
+            <div class="radar-ebenen-reihe">
+              <button id="vorschau-aus" class="ebenen-knopf" type="button" aria-pressed="true">Aus</button>
+              <button id="vorschau-1h" class="ebenen-knopf" type="button" aria-pressed="false">+1&nbsp;h</button>
+              <button id="vorschau-2h" class="ebenen-knopf" type="button" aria-pressed="false">+2&nbsp;h</button>
+            </div>
+            <p id="vorschau-hinweis" class="hinweis">Keine Vorhersage-Ebene aktiv.</p>
+          </div>
+          <!-- Legende (Farbwerte laut offizieller RainViewer-Farbtabelle) -->
+          <div class="radar-legende" aria-hidden="true">
+            <span class="legenden-titel">Regenintensität (dBZ)</span>
+            <div class="legenden-skala" id="radar-legende-skala"></div>
+            <div class="legenden-beschriftung"><span>schwach</span><span>stark</span></div>
+          </div>
+        </div>
+
+        <!-- Die Karte -->
+        <div id="radar-karte" class="radar-karten-flaeche"></div>
+
+        <!-- Hinweistext, falls Radar nicht verfügbar -->
+        <div id="radar-hinweis" class="karte" hidden>
+          <h2>Regenradar derzeit nicht verfügbar</h2>
+          <p id="radar-hinweistext"></p>
+        </div>
+
+        <p class="quellenzeile">
+          Radardaten: <a href="https://www.rainviewer.com/" rel="noopener" target="_blank">RainViewer</a>
+          (frei für private/nicht-kommerzielle Nutzung) · Kartendarstellung:
+          © <a href="https://www.openstreetmap.org/copyright" rel="noopener" target="_blank">OpenStreetMap</a>-Mitwirkende
+          <span id="radar-aktualisiert"></span>
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="fussbereich">
+    <p>
+      Wetterdaten: <a href="https://open-meteo.com/" rel="noopener" target="_blank">Open-Meteo.com</a> ·
+      Unsicherheit: Open-Meteo Ensemble (GFS) ·
+      Radar: <a href="https://www.rainviewer.com/" rel="noopener" target="_blank">RainViewer.com</a> ·
+      Keine API-Schlüssel im Frontend erforderlich.
+    </p>
+  </footer>
+</body>
+</html>

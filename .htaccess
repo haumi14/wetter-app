@@ -1,0 +1,20 @@
+# Einstellungen fuer normalen Apache-Webspace (/.htaccess), damit die PWA
+# auch dort sauber funktioniert, wo man keinen Webserver konfigurieren kann:
+#  - Korrekte Datentypen (Manifest) und
+#  - Service Worker & Manifest nie veraltet aus dem Zwischenspeicher.
+
+<IfModule mod_mime.c>
+  AddType application/manifest+json .webmanifest
+</IfModule>
+
+<Files "sw.js">
+  <IfModule mod_headers.c>
+    Header set Cache-Control "no-cache"
+  </IfModule>
+</Files>
+
+<Files "manifest.webmanifest">
+  <IfModule mod_headers.c>
+    Header set Cache-Control "no-cache"
+  </IfModule>
+</Files>

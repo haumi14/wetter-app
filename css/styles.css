@@ -1,0 +1,498 @@
+/* ==========================================================================
+   Wetter-App – responsives Stylesheet (Mobile First)
+   Farbkontraste erfüllen WCAG-AA (mind. 4,5:1 für Fließtext).
+   ========================================================================== */
+
+:root {
+  --farbe-hintergrund: #eef2f7;
+  --farbe-karte: #ffffff;
+  --farbe-text: #1c2733;
+  --farbe-text-abgescwaecht: #4d5c6b;
+  --farbe-akzent: #0b62a3;        /* kräftiges Blau, kontrastreich auf Weiß */
+  --farbe-akzent-text: #ffffff;
+  --farbe-fehler: #a02020;
+  --farbe-rand: #d4dde6;
+  --radius: 14px;
+  --schlagschatten: 0 2px 10px rgba(20, 40, 70, 0.08);
+  --abstand: 16px;
+}
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  font-family: system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--farbe-text);
+  background: var(--farbe-hintergrund);
+}
+
+/* Unterseite der App: mitwachsen, damit der Footer unten klebt */
+main { max-width: 1080px; margin: 0 auto; padding: var(--abstand); }
+
+h1 { font-size: 1.25rem; margin: 0; }
+h2 { font-size: 1.05rem; margin: 0 0 8px; }
+
+a { color: var(--farbe-akzent); }
+
+/* --------- Sprungmarke & Zugänglichkeits-Helfer ---------- */
+.skip-link {
+  position: absolute; left: -999px; top: 0;
+  background: var(--farbe-akzent); color: var(--farbe-akzent-text);
+  padding: 8px 16px; border-radius: 0 0 8px 0; z-index: 1000;
+}
+.skip-link:focus { left: 0; }
+
+.visuell-verborgen {
+  position: absolute; width: 1px; height: 1px; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
+}
+
+/* Deutlich sichtbarer Fokusring für Tastaturnutzung */
+:focus-visible { outline: 3px solid var(--farbe-akzent); outline-offset: 2px; }
+
+/* ================================ Kopfzeile ================================ */
+.kopfbereich {
+  background: linear-gradient(160deg, #123f66, #0b62a3 65%, #1477c9);
+  color: #ffffff;
+  padding: 12px var(--abstand) var(--abstand);
+}
+.kopf-zeile {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  max-width: 1080px; margin: 0 auto;
+}
+.kopf-zeile .logo { font-size: 1.6rem; }
+.hauptnavigation { margin-left: auto; display: flex; gap: 6px; }
+.nav-link {
+  color: #ffffff; text-decoration: none; font-weight: 600;
+  padding: 10px 14px; border-radius: 999px; min-height: 44px;
+  display: inline-flex; align-items: center;
+}
+.nav-link:hover { background: rgba(255, 255, 255, 0.18); }
+.nav-link[aria-current="page"] { background: #ffffff; color: var(--farbe-akzent); }
+
+/* --------------------------------- Suche ---------------------------------- */
+.suchbereich { max-width: 1080px; margin: 12px auto 0; }
+.suchfeld { position: relative; }
+#sucheingabe {
+  width: 100%; padding: 12px 52px 12px 14px; font-size: 1.05rem;
+  border: 2px solid transparent; border-radius: var(--radius);
+  background: #ffffff; color: var(--farbe-text); min-height: 48px;
+}
+#sucheingabe::placeholder { color: #5f6f7f; }
+.icon-button {
+  position: absolute; right: 4px; top: 4px; width: 44px; height: 44px;
+  border: none; background: transparent; font-size: 1.2rem; cursor: pointer;
+  border-radius: 10px; color: var(--farbe-text);
+}
+.icon-button:hover { background: #e4ebf3; }
+
+/* Ergebnisliste der Autovervollständigung */
+.suchergebnisse {
+  position: absolute; z-index: 60; top: calc(100% + 6px); left: 0; right: 0;
+  list-style: none; margin: 0; padding: 4px;
+  background: var(--farbe-karte); color: var(--farbe-text);
+  border: 1px solid var(--farbe-rand); border-radius: var(--radius);
+  box-shadow: 0 12px 30px rgba(10, 30, 60, 0.25);
+  max-height: 320px; overflow-y: auto;
+}
+.suchergebnisse li {
+  padding: 10px 12px; border-radius: 8px; cursor: pointer;
+  display: flex; justify-content: space-between; gap: 10px; min-height: 44px;
+  align-items: center;
+}
+.suchergebnisse li .ort-name { font-weight: 600; }
+.suchergebnisse li .ort-kontext {
+  color: var(--farbe-text-abgescwaecht); font-size: 0.85rem; text-align: right;
+}
+.suchergebnisse li:hover,
+.suchergebnisse li[aria-selected="true"] { background: #dbe8f4; }
+.suchergebnisse li:empty { display: none; }
+
+.statusmeldung { margin: 6px 2px 0; min-height: 1.2em; font-size: 0.92rem; }
+.statusmeldung.fehler { color: #ffd9d9; font-weight: 600; }
+
+/* -------------------------------- Favoriten -------------------------------- */
+.favoritenbereich {
+  max-width: 1080px; margin: 10px auto 0;
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+}
+.bereichs-titel { font-size: 0.85rem; opacity: 0.9; }
+.favoritenliste { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(255, 255, 255, 0.16); color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.45); border-radius: 999px;
+  padding: 8px 14px; font-size: 0.95rem; cursor: pointer; min-height: 40px;
+}
+.chip:hover { background: rgba(255, 255, 255, 0.3); }
+.chip .chip-loeschen {
+  border: none; background: transparent; color: inherit; font-size: 0.9rem;
+  cursor: pointer; padding: 2px 4px; border-radius: 50%; line-height: 1;
+}
+.chip .chip-loeschen:hover { background: rgba(255, 255, 255, 0.35); }
+.chip-aktion { border-style: dashed; }
+
+/* ================================== Karten ================================== */
+.karte {
+  background: var(--farbe-karte);
+  border: 1px solid var(--farbe-rand);
+  border-radius: var(--radius);
+  box-shadow: var(--schlagschatten);
+  padding: var(--abstand);
+  margin-bottom: var(--abstand);
+}
+
+/* ------------------------------ Aktuelles Wetter ---------------------------- */
+.aktuell-kopf { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.aktuell-ort { font-size: 1.3rem; font-weight: 700; margin: 0; }
+.aktuell-zeit { color: var(--farbe-text-abgescwaecht); font-size: 0.9rem; }
+.aktuell-haupt {
+  display: flex; align-items: center; gap: 18px; flex-wrap: wrap; margin-top: 8px;
+}
+.aktuell-temp { font-size: 4rem; font-weight: 800; line-height: 1; letter-spacing: -2px; }
+.aktuell-temp .grad { font-size: 2rem; vertical-align: super; font-weight: 600; }
+.aktuell-symbol { font-size: 3.2rem; }
+.aktuell-zustaende { display: grid; gap: 2px; }
+.aktuell-zustand { font-size: 1.15rem; font-weight: 600; }
+.aktuell-gefuehlt { color: var(--farbe-text-abgescwaecht); }
+.aktuell-details {
+  display: flex; gap: 14px; flex-wrap: wrap; margin-top: 12px;
+  padding-top: 12px; border-top: 1px solid var(--farbe-rand);
+  color: var(--farbe-text-abgescwaecht); font-size: 0.95rem;
+}
+.aktuell-details strong { color: var(--farbe-text); }
+
+.quellenzeile { font-size: 0.8rem; color: var(--farbe-text-abgescwaecht); margin: 8px 0 0; }
+.quellenzeile a { color: inherit; }
+
+/* ------------------------------- Tagesspule --------------------------------- */
+.tagesspule {
+  display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px;
+  scroll-snap-type: x proximity;
+}
+.tag-chip {
+  scroll-snap-align: start; flex: 0 0 auto; min-width: 86px; min-height: 92px;
+  border: 2px solid var(--farbe-rand); border-radius: 12px; background: #f7fafd;
+  padding: 8px 10px; cursor: pointer; text-align: center; font: inherit;
+  color: var(--farbe-text);
+}
+.tag-chip .tag-name { font-weight: 700; font-size: 0.85rem; }
+.tag-chip .tag-symbol { font-size: 1.5rem; display: block; }
+.tag-chip .tag-temp { font-size: 0.82rem; color: var(--farbe-text-abgescwaecht); }
+.tag-chip[aria-selected="true"] {
+  border-color: var(--farbe-akzent); background: #e2eefa; font-weight: 700;
+}
+
+/* ------------------------------ Zeitraumleiste ------------------------------- */
+.zeitraumleiste { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+.zeitraum-knopf {
+  border: 2px solid var(--farbe-akzent); background: #ffffff; color: var(--farbe-akzent);
+  border-radius: 999px; padding: 8px 16px; font: inherit; font-weight: 600;
+  cursor: pointer; min-height: 40px;
+}
+.zeitraum-knopf[aria-pressed="true"] {
+  background: var(--farbe-akzent); color: var(--farbe-akzent-text);
+}
+
+/* -------------------------------- Diagramme ---------------------------------- */
+/* Beide Diagramme untereinander in voller Breite */
+.diagramm-raster { display: grid; gap: var(--abstand); }
+.diagramm-rahmen { position: relative; height: 340px; }
+.diagramm-rahmen-kurz { height: 240px; }
+.diagramm-legende-hinweis {
+  margin: 0 0 6px; font-size: 0.85rem; color: var(--farbe-text-abgescwaecht);
+}
+
+/* Kopf des Wind-Diagramms: Titel links, kleine Windrose rechts */
+.wind-kopf {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;   /* Mitte-Spalte = echte Mitte der Karte */
+  align-items: center;
+  gap: 12px;
+}
+.wind-kopf h2 { grid-column: 1; margin: 0; }
+.windrose {
+  grid-column: 2; justify-self: center;
+  display: flex; align-items: center; gap: 8px;
+  color: var(--farbe-text-abgescwaecht);
+}
+.windrose svg { flex-shrink: 0; }
+.windrose-text { font-size: 0.78rem; max-width: 210px; line-height: 1.25; }
+@media (max-width: 560px) {
+  .windrose-text { display: none; }  /* auf schmalen Geräten: nur die Rose (Tooltip bleibt) */
+}
+
+/* --------------------------- Status / Fehler / Laden -------------------------- */
+.statusbereich {
+  border: 2px solid var(--farbe-fehler); color: var(--farbe-fehler);
+  background: #fdeeec; border-radius: var(--radius); padding: var(--abstand);
+  margin-bottom: var(--abstand); font-weight: 600;
+}
+.sekundaerer-knopf {
+  border: 2px solid var(--farbe-fehler); background: #ffffff; color: var(--farbe-fehler);
+  border-radius: 8px; padding: 8px 14px; font: inherit; font-weight: 700;
+  cursor: pointer; min-height: 40px;
+}
+.hinweis { color: var(--farbe-text-abgescwaecht); }
+
+/* Lade-Skelett (pulsierend) */
+.skelett { animation: puls 1.1s ease-in-out infinite alternate; }
+.lade-balken {
+  height: 22px; border-radius: 6px; background: #dfe7ef; margin: 8px 0;
+}
+@keyframes puls { from { opacity: 1; } to { opacity: 0.45; } }
+
+/* ================================== Radar ==================================== */
+.radar-umgebung { display: flex; flex-direction: column; gap: 10px; }
+.radar-karten-flaeche {
+  height: 62vh; min-height: 380px; border-radius: var(--radius);
+  border: 1px solid var(--farbe-rand); box-shadow: var(--schlagschatten);
+  background: #dfe7ef;
+}
+.radar-steuerung { display: grid; gap: 8px; margin-bottom: 0; }
+.radar-zeitreihe { display: flex; align-items: center; gap: 10px; }
+#radar-abspielen {
+  position: static; width: 48px; height: 48px; flex: 0 0 auto;
+  background: var(--farbe-akzent); color: #fff; font-size: 1.1rem;
+}
+#radar-abspielen:hover { background: #094c7f; }
+#radar-slider { flex: 1; height: 36px; accent-color: var(--farbe-akzent); }
+.radar-zeitpunkt { margin: 0; font-weight: 700; }
+.radar-zeitpunkt .zeitpunkt-kurz { font-weight: 400; color: var(--farbe-text-abgescwaecht); }
+
+/* Radar-Legende */
+.radar-legende .legenden-titel { font-size: 0.85rem; font-weight: 700; }
+.legenden-skala {
+  display: flex; height: 14px; border-radius: 4px; overflow: hidden; margin: 4px 0 2px;
+}
+.legenden-skala span { flex: 1; }
+.legenden-beschriftung {
+  display: flex; justify-content: space-between;
+  font-size: 0.78rem; color: var(--farbe-text-abgescwaecht);
+}
+
+/* Leaflet-Beschriftung lesbar halten */
+.leaflet-container { font: inherit; background: #dfe6ec; } /* graue Flaeche zwischen/unter den Kacheln */
+.leaflet-control-attribution { font-size: 10px; }
+
+/* Hintergrundkarten-Kacheln: rein entfärbt (Graustufen, unveränderte
+   Helligkeit) – Struktur und Küsten bleiben gut lesbar, der farbige
+   Radar-Overlay sticht trotzdem heraus. */
+.basiskarte-dezent {
+  filter: grayscale(1);
+}
+
+/* Ortsmarkierung auf der Radarkarte (Leaflet divIcon) */
+.ort-marker {
+  box-sizing: border-box;
+  background: #c0304a;
+  border: 2.5px solid #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 0 0 1.5px rgba(28, 39, 51, 0.35), 0 1px 4px rgba(0, 0, 0, 0.4);
+}
+
+/* ================================= Footer ==================================== */
+.fussbereich {
+  max-width: 1080px; margin: 24px auto 32px; padding: 0 var(--abstand);
+  color: var(--farbe-text-abgescwaecht); font-size: 0.85rem;
+}
+
+/* ============================ Responsive-Layout =============================== */
+/* Ab Tablet: Radar-Steuerung zweispaltig */
+@media (min-width: 760px) {
+  .radar-steuerung {
+    grid-template-columns: minmax(280px, 460px) auto;
+    align-items: center;
+  }
+  .radar-legende { max-width: 320px; justify-self: end; }
+}
+
+@media (min-width: 1024px) {
+  .diagramm-rahmen { height: 380px; }
+  .diagramm-rahmen-kurz { height: 260px; }
+  .aktuell-temp { font-size: 4.6rem; }
+}
+
+/* ============ Info-Raster: Tagesaussicht, Sonne/Mond, Gezeiten ============= */
+.info-raster {
+  display: grid;
+  gap: var(--abstand-klein, 12px);
+  grid-template-columns: 1fr;
+  margin-bottom: 18px;
+}
+@media (min-width: 720px) {
+  .info-raster { grid-template-columns: 1fr 1fr; }
+}
+.info-karte h2 { font-size: 1.05rem; margin: 0 0 8px; }
+.info-text { font-size: 0.95rem; line-height: 1.5; }
+.info-zeile { display: flex; justify-content: space-between; gap: 10px; padding: 2px 0; }
+.info-zeile dt { color: var(--text-dezent, #4d5c6b); }
+.info-zeile dd { margin: 0; font-variant-numeric: tabular-nums; font-weight: 600; }
+dl.info-liste { margin: 0; }
+
+/* Mondphase */
+.mond-wein { font-size: 1.05rem; }
+
+/* Wetter-Kulisse im Kopfbereich (nur Deko) */
+
+/* Gezeiten */
+.gezeiten-pegel {
+  font: inherit; margin: 0 0 8px; padding: 4px 8px;
+  border: 1px solid var(--rand, #c3ccd5); border-radius: 8px; background: #fff;
+}
+ul.tidenliste { list-style: none; margin: 0; padding: 0; }
+ul.tidenliste li { display: flex; justify-content: space-between; gap: 8px; padding: 3px 0;
+  border-bottom: 1px dashed #e1e7ed; font-variant-numeric: tabular-nums; }
+ul.tidenliste li:last-child { border-bottom: 0; }
+.tiden-typ { font-weight: 700; }
+.tiden-typ.hoch { color: #0b5cad; }
+.tiden-typ.niedrig { color: #8a6d00; }
+.tiden-jetzt { background: #eaf4ff; border-radius: 6px; }
+.tide-naeherung { background: #fff7e6; border: 1px solid #f0d9a8; border-radius: 8px; padding: 6px 8px; }
+
+/* ============ Radar: Vorschau-/Gewitterebenen ============================== */
+.radar-ebenen { margin-top: 8px; }
+.radar-ebenen-reihe { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+.ebenen-knopf {
+  font: inherit; padding: 4px 10px; border-radius: 999px;
+  border: 1px solid var(--rand, #c3ccd5); background: #fff; cursor: pointer;
+}
+.ebenen-knopf[aria-pressed="true"] { background: #0b5cad; border-color: #0b5cad; color: #fff; }
+.vorschau-legende { display: flex; align-items: center; gap: 6px; margin-top: 6px; font-size: 0.85rem; }
+.vorschau-fleck { width: 14px; height: 14px; border-radius: 50%; display: inline-block; }
+
+/* ============ Wetter-Kulisse (Kopfteil: Sonne, Mond, Regen & Co.) ========== */
+/*
+ * Der Kopfbereich bekommt eine dekorative, wetterabhängige Szene
+ * (js/himmel.js baut die Elemente). Alles absolut positioned hinter dem
+ * Inhalt (z-index), pointer-events aus, damit Suchfeld & Navigation
+ * komplett bedienbar bleiben.
+ */
+.kopfbereich { position: relative; overflow: hidden; padding-bottom: calc(var(--abstand) + 40px); }
+.kopfbereich > :not(.himmels-kulisse) { position: relative; z-index: 2; }
+.himmels-kulisse {
+  position: absolute; inset: 0; z-index: 1;
+  overflow: hidden; pointer-events: none;
+  transition: background 1.2s ease;
+}
+/* Grundstimmung je nach Wetter und Tageszeit */
+.himmels-kulisse.kulisse-nacht { background: linear-gradient(180deg, rgba(6, 16, 38, .55), rgba(6, 16, 38, .25)); }
+.himmels-kulisse.kulisse-nebel    { background: linear-gradient(180deg, rgba(200, 210, 220, .35), transparent); }
+.himmels-kulisse.kulisse-regen.kulisse-nacht,
+.himmels-kulisse.kulisse-gewitter.kulisse-nacht { background: linear-gradient(180deg, rgba(5, 12, 28, .6), rgba(10, 22, 40, .3)); }
+.himmels-kulisse.kulisse-schnee   { background: linear-gradient(180deg, rgba(230, 240, 250, .25), transparent); }
+
+/* Sonne: glowender Kern mit langsam rotierendem Strahlenkranz */
+.kulisse-sonne {
+  position: absolute; top: 14px; right: 8%;
+  width: 84px; height: 84px; border-radius: 50%;
+  background: radial-gradient(circle at 40% 40%, #fff7d6, #ffd75e 55%, #ffb63a);
+  box-shadow: 0 0 34px 14px rgba(255, 205, 92, .55), 0 0 90px 40px rgba(255, 190, 70, .25);
+  animation: sonnig-puls 6s ease-in-out infinite;
+}
+.kulisse-sonnen-strahlen {
+  position: absolute; inset: -46px; border-radius: 50%;
+  background: repeating-conic-gradient(rgba(255, 222, 130, .16) 0deg 7deg, transparent 7deg 18deg);
+  animation: strahlen-drehung 60s linear infinite;
+}
+@keyframes sonnig-puls { 50% { box-shadow: 0 0 44px 18px rgba(255, 205, 92, .65), 0 0 110px 52px rgba(255, 190, 70, .3); } }
+@keyframes strahlen-drehung { to { transform: rotate(360deg); } }
+
+/* Mond: heller Kern mit weichem Schimmer; Sichel über inländigen Schattenwurf */
+.kulisse-mond {
+  position: absolute; top: 16px; right: 9%;
+  width: 58px; height: 58px; border-radius: 50%;
+  background: radial-gradient(circle at 38% 35%, #ffffff, #dfe6ef 60%, #b9c4d2);
+  box-shadow: 0 0 26px 10px rgba(220, 232, 248, .35), 0 0 70px 26px rgba(200, 216, 240, .15);
+}
+.kulisse-mond::after {  /* dezente “Krater” */
+  content: ""; position: absolute; inset: 0; border-radius: 50%;
+  background: radial-gradient(circle at 62% 30%, rgba(140, 155, 175, .5) 0 7px, transparent 8px),
+              radial-gradient(circle at 35% 65%, rgba(140, 155, 175, .4) 0 5px, transparent 6px),
+              radial-gradient(circle at 68% 68%, rgba(140, 155, 175, .35) 0 4px, transparent 5px);
+}
+.kulisse-stern {
+  position: absolute; border-radius: 50%; background: #ffffff;
+  animation-name: funkeln; animation-iteration-count: infinite; animation-timing-function: ease-in-out;
+}
+@keyframes funkeln { 0%, 100% { opacity: .15; } 50% { opacity: .95; } }
+
+/* Wolken: weiche helle Schwaden, zwei Geschwindigkeiten für Tiefe */
+.kulisse-wolke {
+  position: absolute; left: -18%;
+  width: 220px; height: 54px; border-radius: 999px; filter: blur(6px);
+  background: radial-gradient(ellipse at 30% 55%, rgba(255, 255, 255, .95), rgba(255, 255, 255, .45) 60%, transparent 75%);
+  animation-name: wolke-ziehen; animation-timing-function: linear; animation-iteration-count: infinite;
+}
+.kulisse-nacht .kulisse-wolke {
+  background: radial-gradient(ellipse at 30% 55%, rgba(185, 200, 220, .7), rgba(150, 168, 192, .3) 60%, transparent 75%);
+}
+@keyframes wolke-ziehen { from { left: -22%; } to { left: 108%; } }
+
+/* Regentropfen: kurze schiefe Striche */
+.kulisse-tropfen {
+  position: absolute; top: -12%;
+  width: 2px; height: 14px; border-radius: 2px;
+  background: linear-gradient(rgba(210, 230, 250, 0), rgba(215, 235, 255, .9));
+  transform: skewX(-14deg);
+  animation-name: tropfen-fall; animation-timing-function: linear; animation-iteration-count: infinite;
+}
+@keyframes tropfen-fall { to { transform: translate(-24px, 260px) skewX(-14deg); } }
+
+/* Schneeflocken: weiche Pünktchen mit sanftem Schwojen */
+.kulisse-flocke {
+  position: absolute; top: -6%; border-radius: 50%; background: #ffffff;
+  box-shadow: 0 0 6px rgba(255, 255, 255, .8);
+  animation-name: flocke-tanz; animation-timing-function: linear; animation-iteration-count: infinite;
+}
+@keyframes flocke-tanz {
+  0%   { transform: translate(0, 0); }
+  25%  { transform: translate(14px, 70px); }
+  50%  { transform: translate(-10px, 140px); }
+  75%  { transform: translate(12px, 210px); }
+  100% { transform: translate(-6px, 280px); }
+}
+
+/* Nebel: breite, helle Bänder */
+.kulisse-nebel {
+  position: absolute; left: -30%; width: 80%; height: 60px; border-radius: 999px; filter: blur(16px);
+  background: linear-gradient(90deg, transparent, rgba(235, 242, 248, .85), transparent);
+  animation-name: nebel-driften; animation-timing-function: ease-in-out; animation-iteration-count: infinite;
+}
+@keyframes nebel-driften { 0% { transform: translateX(0); } 50% { transform: translateX(60%); } 100% { transform: translateX(0); } }
+
+/* Blitz: die Fläche hellt kurz auf – selten und ohne grelles Flackern */
+.kulisse-blitz {
+  position: absolute; inset: 0; background: rgba(255, 255, 255, .85);
+  opacity: 0; animation-name: blitz-licht; animation-timing-function: linear; animation-iteration-count: infinite;
+}
+@keyframes blitz-licht {
+  0%, 88%   { opacity: 0; }
+  89%       { opacity: .55; }
+  90%       { opacity: 0; }
+  92%       { opacity: .35; }
+  93%, 100% { opacity: 0; }
+}
+
+/* Meeres-Chips (Wassertemperatur, Wellenhöhe, Luftfeuchte) – sitzen auf der
+ * weißen aktuellen Wetters-Karte, also hellblau mit dunkler Schrift. */
+.meer-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.meer-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: #eaf2fb; color: var(--farbe-text);
+  border: 1px solid #c9dcee; border-radius: 999px; padding: 6px 14px; font-size: 0.92rem;
+}
+.meer-chip .chip-label { opacity: .8; }
+.meer-chip-ladeend { opacity: .65; }
+
+/* Bewegung reduzieren (barrierearm): Kulisse bleibt, Bewegung bleibt weg. */
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  .himmels-kulisse :is(.kulisse-tropfen, .kulisse-flocke, .kulisse-wolke,
+                        .kulisse-nebel, .kulisse-blitz, .kulisse-sonnen-strahlen) { display: none !important; }
+  .kulisse-stern { animation: none !important; opacity: .5 !important; }
+}

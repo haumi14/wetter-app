@@ -1,0 +1,4 @@
+# Unbenoetigte Altlasten und Arbeitsspeicher nicht mit ins Internet
+wetter-app-standalone.html
+__pycache__/
+*.pyc

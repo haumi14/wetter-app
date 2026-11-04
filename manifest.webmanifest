@@ -1,0 +1,19 @@
+{
+  "name": "Wetter · Vorhersage & Radar",
+  "short_name": "Wetter",
+  "description": "Wetter-App mit 16-Tage-Vorhersage, Unsicherheitsbändern, Ebbe & Flut und Regenradar – auf Basis freier Wetterdaten.",
+  "id": "wetter-app",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "lang": "de",
+  "dir": "ltr",
+  "background_color": "#f2f6fb",
+  "theme_color": "#0b62a3",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
