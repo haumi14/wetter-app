@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Helles Aussehen erzwingen: Handys mit "Dunkles Design" duerfen die
+       Seite nicht eigenmaechig dunkel einfärben (war schlecht lesbar). -->
+  <meta name="color-scheme" content="light only" />
   <meta name="description" content="Responsive Wetterseite mit 16-Tage-Vorhersage, Unsicherheitsangaben, Favoriten und Regenradar – auf Basis freier Wetterdaten (Open-Meteo, RainViewer)." />
   <title>Wetter · Vorhersage &amp; Radar</title>
 
@@ -150,8 +153,8 @@
           <div class="wind-kopf">
             <h2 id="wind-titel">Windgeschwindigkeit</h2>
             <!-- Kleine Windrose als Orientierungshilfe: Norden oben.
-                 Pfeile im Diagramm zeigen die Herkunftsrichtung des Windes an. -->
-            <span class="windrose" title="Windrose zur Orientierung: Norden oben. Die Pfeile zeigen die Herkunftsrichtung des Windes.">
+                 Pfeile im Diagramm zeigen, aus welcher Richtung der Wind kommt. -->
+            <span class="windrose" title="Windrose zur Orientierung: Norden oben. Die Pfeile zeigen, aus welcher Richtung der Wind kommt.">
               <svg viewBox="0 0 40 40" width="38" height="38" role="img"
                    aria-label="Windrose mit Norden oben">
                 <circle cx="20" cy="20" r="13.5" fill="#f7fafd" stroke="#5c6b7a" stroke-width="1.2"/>
@@ -163,7 +166,7 @@
                 <text x="20" y="39.4" text-anchor="middle" font-size="7" fill="#4d5c6b">S</text>
                 <text x="3"   y="22.6" text-anchor="middle" font-size="7" fill="#4d5c6b">W</text>
               </svg>
-              <span class="windrose-text">Pfeile zeigen die Herkunftsrichtung des Windes an</span>
+              <span class="windrose-text">➜ Aus Richtung</span>
             </span>
           </div>
           <div class="diagramm-rahmen diagramm-rahmen-kurz"><canvas id="diagramm-wind" role="img"

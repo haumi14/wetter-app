@@ -4,6 +4,9 @@
    ========================================================================== */
 
 :root {
+  color-scheme: light;  /* IMMER helles Aussehen erzwingen: verhindert,
+                           dass Handys mit "Dunklem Design" die Seite
+                           eigenmaechig dunkel einfaerben (schlecht lesbar). */
   --farbe-hintergrund: #eef2f7;
   --farbe-karte: #ffffff;
   --farbe-text: #1c2733;
@@ -222,8 +225,9 @@ a { color: var(--farbe-akzent); }
 }
 .windrose svg { flex-shrink: 0; }
 .windrose-text { font-size: 0.78rem; max-width: 210px; line-height: 1.25; }
+/* Kurzer Hinweis sichtbar lassen – auch auf dem Handy (frueher: ausgeblendet). */
 @media (max-width: 560px) {
-  .windrose-text { display: none; }  /* auf schmalen Geräten: nur die Rose (Tooltip bleibt) */
+  .windrose-text { font-size: 0.72rem; max-width: 150px; }
 }
 
 /* --------------------------- Status / Fehler / Laden -------------------------- */
@@ -252,6 +256,10 @@ a { color: var(--farbe-akzent); }
   height: 62vh; min-height: 380px; border-radius: var(--radius);
   border: 1px solid var(--farbe-rand); box-shadow: var(--schlagschatten);
   background: #dfe7ef;
+}
+/* Querformat auf Handys: zu wenig Hoehe – Karte stauchen statt abschneiden. */
+@media (orientation: landscape) and (max-height: 520px) {
+  .radar-karten-flaeche { height: 78vh; min-height: 240px; }
 }
 .radar-steuerung { display: grid; gap: 8px; margin-bottom: 0; }
 .radar-zeitreihe { display: flex; align-items: center; gap: 10px; }
