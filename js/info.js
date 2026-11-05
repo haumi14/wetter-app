@@ -5,7 +5,7 @@
  *  · Ebbe & Flut                  (amtliche BSH-Gezeitenvorausberechnung)
  */
 
-import { gezeitenPegelLaden, gezeitenLaden, wasserstandLaden, tideAuslesen, GEZEITEN_STATIONEN } from "./api.js";
+import { gezeitenPegelLaden, gezeitenLaden, bshGdiPegelLaden, bshGdiLaden, wasserstandLaden, tideAuslesen, GEZEITEN_STATIONEN } from "./api.js";
 import { wetterzustand, kompassrichtung, zahl, bftAusMs } from "./wmo.js";
 
 const $ = (id) => document.getElementById(id);
@@ -93,7 +93,8 @@ export function zeigeSonneMond(vor) {
 
 /* ------------------------------ Ebbe & Flut -------------------------------- */
 
-const BSH_STANDARD_PEGEL = "510P"; // Husum, Schleuse
+const STANDARD_PEGEL_GDI = "husum_schleuse";   // BSH-Datenportal (läuft überall)
+const STANDARD_PEGEL_PROXY = "510P";           // Heim-Proxy (dev-server.py)
 let gezeitenPegel = [];
 
 function naechsterPegel(lat, lon) {
@@ -108,49 +109,57 @@ function naechsterPegel(lat, lon) {
 const TID_UHRZEIT = new Intl.DateTimeFormat("de-DE",
   { weekday: "short", day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
 
-async function ladeTiden(bshnr) {
+const TID_STAND = new Intl.DateTimeFormat("de-DE",
+  { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
+
+function tidenListe(eintraege) {
+  const li = (t, zuerst) => `
+    <li class="${zuerst ? "tiden-jetzt" : ""}">
+      <span><span class="tiden-typ ${t.typ}">${t.typ === "hoch" ? "⬆ Flut" : "⬇ Ebbe"}</span>
+      ${TID_UHRZEIT.format(t.zeit)}</span>
+      <span>${t.cm} cm</span>
+    </li>`;
+  return `<ul class="tidenliste">${eintraege.map((t, i) => li(t, i === 0)).join("")}</ul>`;
+}
+
+async function ladeTiden(schluessel) {
   const feld = $("gezeiten-inhalt");
   feld.innerHTML = '<span class="hinweis">Tiden werden geladen …</span>';
-  const pegel = gezeitenPegel.find((p) => p.bshnr === bshnr);
+  const pegel = gezeitenPegel.find((p) => p.schluessel === schluessel);
   if (!pegel) { feld.innerHTML = '<span class="hinweis">Pegel nicht gefunden.</span>'; return; }
+
+  // ---- 1) Amtlich über das offene BSH-Datenportal (funktioniert überall) ----
   let daten = null;
-  if (!pegel.modellNur) {
+  if (pegel.gdiId) {
+    try { daten = await bshGdiLaden(pegel.gdiId); } catch { daten = null; }
+  }
+  // ---- 2) Amtlich über die Datei-API (nur mit Heim-Proxy erreichbar) --------
+  if (!daten && pegel.bshnr) {
     try { daten = await gezeitenLaden(pegel); } catch { daten = null; }
   }
   if (daten?.tide?.length) {
-    const li = (t, zuerst) => `
-      <li class="${zuerst ? "tiden-jetzt" : ""}">
-        <span><span class="tiden-typ ${t.typ}">${t.typ === "hoch" ? "⬆ Flut" : "⬇ Ebbe"}</span>
-        ${TID_UHRZEIT.format(t.zeit)}</span>
-        <span>${t.cm} cm</span>
-      </li>`;
+    const stand = daten.vorhersageStand
+      ? ` · Vorhersage-Stand: ${TID_STAND.format(new Date(daten.vorhersageStand.replace(" ", "T")))}` : "";
+    const offline = daten.offline
+      ? `<br><span class="tide-naeherung">🟠 Amtliche Werte aus dem Offline-Zwischenspeicher der App – `
+        + `für aktuelle Tiden wieder mit dem Internet verbinden.</span>` : "";
     feld.innerHTML = `
-      <ul class="tidenliste">${daten.tide.map((t, i) => li(t, i === 0)).join("")}</ul>
-      <p class="hinweis">Höhen über ${daten.referenz} · ${daten.station} ·
-        <a href="${daten.pegelLink}" rel="noopener" target="_blank">beim BSH öffnen</a></p>`;
+      ${tidenListe(daten.tide)}
+      <p class="hinweis">Höhen über ${daten.referenz} · ${daten.station}${stand} ·
+        <a href="${daten.pegelLink}" rel="noopener" target="_blank">beim BSH öffnen</a>${offline}</p>`;
     return;
   }
 
-  // ---- Fallback: amtliche BSH-Daten gerade nicht erreichbar? ----
-  // Dann zeigt die App die Tiden aus dem Copernikus-Meeresspiegelmodell
-  // (Open-Meteo Marine, weltweit per Browser nutzbar) – klar als
-  // Modell-Näherung gekennzeichnet, damit auf dem Handy nie eine Sackgasse
-  // entsteht._amtlich bleibt der Link auf gezeiten.bsh.de.
+  // ---- 3) Letzter Ausweg: Copernikus-Meeresspiegel-Modell (Open-Meteo) ------
   feld.innerHTML = '<span class="hinweis">Amtliche Tiden nicht erreichbar – Modell-Näherung wird geladen …</span>';
   try {
     const modell = await tideAusModell(pegel.lat, pegel.lon);
     if (modell.length) {
-      const li = (t, zuerst) => `
-        <li class="${zuerst ? "tiden-jetzt" : ""}">
-          <span><span class="tiden-typ ${t.typ}">${t.typ === "hoch" ? "⬆ Flut" : "⬇ Ebbe"}</span>
-          ${TID_UHRZEIT.format(t.zeit)}</span>
-          <span>${t.cm} cm</span>
-        </li>`;
       feld.innerHTML = `
-        <ul class="tidenliste">${modell.map((t, i) => li(t, i === 0)).join("")}</ul>
+        ${tidenListe(modell)}
         <p class="hinweis tide-naeherung">⚠️ <strong>Modell-Näherung</strong> (Copernikus-Meeresspiegel,
           Höhe über mittlerem Meeresspiegel) – keine amtliche Gezeitentafel.
-          Amtliche Werte: <a href="https://gezeiten.bsh.de/" rel="noopener" target="_blank">gezeiten.bsh.de</a>
+          Amtliche Werte: <a href="https://gdi.bsh.de/" rel="noopener" target="_blank">gdi.bsh.de</a>
           (Pegel: ${pegel.name}).</p>`;
       return;
     }
@@ -177,22 +186,29 @@ export async function initialisiereGezeiten() {
   const feld = $("gezeiten-inhalt");
   if (gezeitenPegel.length) return;
   feld.innerHTML = '<span class="hinweis">Pegelliste wird geladen …</span>';
-  try { gezeitenPegel = (await gezeitenPegelLaden()) ?? []; } catch { gezeitenPegel = []; }
+
+  // Reihenfolge: BSH-Datenportal (offline-Liste, überall nutzbar) →
+  // Proxy-Liste (Heimnetz) → Notliste (nur Modellwerte).
+  try { gezeitenPegel = (await bshGdiPegelLaden()) ?? []; } catch { gezeitenPegel = []; }
+  let standard = STANDARD_PEGEL_GDI;
   if (!gezeitenPegel.length) {
-    // BSH-Pegelliste nicht erreichbar (z. B. Handy ohne heimischen Proxy):
-    // kleine Auswahl eigener Küstenstationen – Karten zeigen dann die
-    // klar gekennzeichnete Modell-Näherung statt einer Sackgasse.
+    try { gezeitenPegel = (await gezeitenPegelLaden()) ?? []; } catch { gezeitenPegel = []; }
+    standard = STANDARD_PEGEL_PROXY;
+  }
+  if (!gezeitenPegel.length) {
     gezeitenPegel = GEZEITEN_STATIONEN.map((s, i) => ({
-      name: s.name + " (Modell)", bshnr: "M" + i, lat: s.lat, lon: s.lon, modellNur: true,
+      name: s.name + " (Modell)", lat: s.lat, lon: s.lon, modellNur: true, schluessel: "M" + i,
     }));
+    standard = "M0";
   }
+  gezeitenPegel = gezeitenPegel.map((p) => ({
+    ...p, schluessel: p.schluessel ?? p.gdiId ?? p.bshnr,
+  }));
+
   const sortiert = [...gezeitenPegel].sort((a, b) => a.name.localeCompare(b.name, "de"));
-  select.innerHTML = sortiert.map((p) => `<option value="${p.bshnr}">${p.name}</option>`).join("");
-  if (![...select.options].some((o) => o.value === BSH_STANDARD_PEGEL)) {
-    select.value = sortiert[0].bshnr;
-  } else {
-    select.value = BSH_STANDARD_PEGEL;
-  }
+  select.innerHTML = sortiert.map((p) => `<option value="${p.schluessel}">${p.name}</option>`).join("");
+  select.value = [...select.options].some((o) => o.value === standard)
+    ? standard : sortiert[0].schluessel;
   select.addEventListener("change", () => ladeTiden(select.value));
   ladeTiden(select.value);
 }
@@ -202,8 +218,9 @@ export function waehleNaechstenPegel(ort) {
   if (!gezeitenPegel.length) return;
   const pegel = naechsterPegel(ort.lat, ort.lon);
   const select = $("gezeiten-pegel");
-  if (pegel && select.value !== pegel.bshnr && [...select.options].some((o) => o.value === pegel.bshnr)) {
-    select.value = pegel.bshnr;
-    ladeTiden(pegel.bshnr);
+  if (pegel && select.value !== pegel.schluessel &&
+      [...select.options].some((o) => o.value === pegel.schluessel)) {
+    select.value = pegel.schluessel;
+    ladeTiden(pegel.schluessel);
   }
 }

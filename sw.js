@@ -13,9 +13,9 @@
  *  · Kartenkacheln (OSM/RainViewer): Cache zuerst, begrenzt (LRU-artig).
  */
 
-const FASSADE = "wetter-fassade-v3";   // App-Shell (fest vorab hinterlegt)
-const DATEN = "wetter-daten-v3";       // letzte API-Antworten
-const KACHELN = "wetter-kacheln-v3";   // Kartenkacheln
+const FASSADE = "wetter-fassade-v4";   // App-Shell (fest vorab hinterlegt)
+const DATEN = "wetter-daten-v4";       // letzte API-Antworten
+const KACHELN = "wetter-kacheln-v4";   // Kartenkacheln
 
 const FASSADE_DATEIEN = [
   "./",
@@ -33,6 +33,7 @@ const FASSADE_DATEIEN = [
   "vendor/chart.umd.min.js",
   "vendor/leaflet.js",
   "vendor/leaflet.css",
+  "data/bsh-gdi-pegel.json",
   "icons/icon-192.png",
   "icons/icon-512.png",
   "icons/icon-maskable-512.png",
@@ -47,6 +48,7 @@ const API_MUSTER = [
   "api.rainviewer.com",
   "bsh-api/",          // lokaler Proxy (/bsh-api/…)
   "gezeiten.bsh.de",
+  "gdi.bsh.de",        // offenes BSH-Datenportal (CSD-freigegeben)
 ];
 
 const KACHEL_MUSTER = [

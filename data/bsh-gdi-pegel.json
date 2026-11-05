@@ -1,0 +1,822 @@
+{
+    "erzeugt":  "2026-11-05",
+    "quelle":  "BSH gdi.bsh.de ldproxy WaterLevelForecast (CC BY 4.0)",
+    "pegel":  [
+                  {
+                      "id":  "alte_weser_leuchtturm",
+                      "name":  "Alte Weser, Leuchtturm",
+                      "lat":  53.863333,
+                      "lon":  8.1275
+                  },
+                  {
+                      "id":  "althagen",
+                      "name":  "Althagen",
+                      "lat":  54.3717574942496,
+                      "lon":  12.4189604829756
+                  },
+                  {
+                      "id":  "amrum_odde",
+                      "name":  "Amrum Odde, Amrum",
+                      "lat":  54.706667,
+                      "lon":  8.339722
+                  },
+                  {
+                      "id":  "barhoeft",
+                      "name":  "Barhöft",
+                      "lat":  54.4345393131129,
+                      "lon":  13.0322210328025
+                  },
+                  {
+                      "id":  "barth",
+                      "name":  "Barth",
+                      "lat":  54.3712205767312,
+                      "lon":  12.7232205648675
+                  },
+                  {
+                      "id":  "belum",
+                      "name":  "Belum, Oste",
+                      "lat":  53.822778,
+                      "lon":  9.037222
+                  },
+                  {
+                      "id":  "bensersiel",
+                      "name":  "Bensersiel",
+                      "lat":  53.674722,
+                      "lon":  7.575
+                  },
+                  {
+                      "id":  "bodstedt",
+                      "name":  "Bodstedt",
+                      "lat":  54.3722,
+                      "lon":  12.62228
+                  },
+                  {
+                      "id":  "borkum_fischerbalje",
+                      "name":  "Borkum, Fischerbalje",
+                      "lat":  53.5575,
+                      "lon":  6.747778
+                  },
+                  {
+                      "id":  "brake",
+                      "name":  "Brake, Weser",
+                      "lat":  53.316111,
+                      "lon":  8.486667
+                  },
+                  {
+                      "id":  "bremen_farge",
+                      "name":  "Bremen, Farge, Weser",
+                      "lat":  53.204722,
+                      "lon":  8.510278
+                  },
+                  {
+                      "id":  "bremen_oslebshausen",
+                      "name":  "Bremen, Oslebshausen, Weser",
+                      "lat":  53.119722,
+                      "lon":  8.712222
+                  },
+                  {
+                      "id":  "bremen_vegesack",
+                      "name":  "Bremen, Vegesack, Weser",
+                      "lat":  53.169444,
+                      "lon":  8.619444
+                  },
+                  {
+                      "id":  "bremen_wilhelm-kaisen-bruecke",
+                      "name":  "Bremen, Wilhelm-Kaisen-Brücke, Weser",
+                      "lat":  53.073056,
+                      "lon":  8.803611
+                  },
+                  {
+                      "id":  "bremerhaven_alter_leuchtturm",
+                      "name":  "Bremerhaven, Weser, Alter Leuchtturm",
+                      "lat":  53.545,
+                      "lon":  8.568056
+                  },
+                  {
+                      "id":  "brokdorf",
+                      "name":  "Brokdorf, Elbe",
+                      "lat":  53.862778,
+                      "lon":  9.316111
+                  },
+                  {
+                      "id":  "brunsbuettel_ost",
+                      "name":  "Brunsbüttel, Elbe, Ost",
+                      "lat":  53.887778,
+                      "lon":  9.148611
+                  },
+                  {
+                      "id":  "buesum_schleuse",
+                      "name":  "Büsum, Schleuse",
+                      "lat":  54.122222,
+                      "lon":  8.859167
+                  },
+                  {
+                      "id":  "cuxhaven_steubenhoeft",
+                      "name":  "Cuxhaven, Steubenhöft, Elbe",
+                      "lat":  53.867778,
+                      "lon":  8.7175
+                  },
+                  {
+                      "id":  "dagebuell",
+                      "name":  "Dagebüll",
+                      "lat":  54.730556,
+                      "lon":  8.686944
+                  },
+                  {
+                      "id":  "dahme-seebruecke",
+                      "name":  "Dahme-Seebrücke",
+                      "lat":  54.226108,
+                      "lon":  11.090759
+                  },
+                  {
+                      "id":  "der_strand_hamburger_hallig",
+                      "name":  "Der Strand, Hamburger Hallig",
+                      "lat":  54.605278,
+                      "lon":  8.787222
+                  },
+                  {
+                      "id":  "dwarsgat",
+                      "name":  "Dwarsgat, Unterfeuer",
+                      "lat":  53.718611,
+                      "lon":  8.3075
+                  },
+                  {
+                      "id":  "dziwnow",
+                      "name":  "Dziwnów",
+                      "lat":  54.0206,
+                      "lon":  14.7317
+                  },
+                  {
+                      "id":  "eckernfoerde",
+                      "name":  "Eckernförde",
+                      "lat":  54.474702770338,
+                      "lon":  9.83600726774434
+                  },
+                  {
+                      "id":  "eider-sperrwerk_aussenpegel",
+                      "name":  "Eider-Sperrwerk, Außenpegel",
+                      "lat":  54.265833,
+                      "lon":  8.841944
+                  },
+                  {
+                      "id":  "elsfleth_ohrt",
+                      "name":  "Elsfleth Ohrt, Hunte",
+                      "lat":  53.221111,
+                      "lon":  8.46
+                  },
+                  {
+                      "id":  "elsfleth",
+                      "name":  "Elsfleth, Weser",
+                      "lat":  53.263889,
+                      "lon":  8.481389
+                  },
+                  {
+                      "id":  "emden_grosse_seeschleuse",
+                      "name":  "Emden, Ems, Große Seeschleuse",
+                      "lat":  53.336667,
+                      "lon":  7.186389
+                  },
+                  {
+                      "id":  "fino2",
+                      "name":  "FINO2",
+                      "lat":  55.00704,
+                      "lon":  13.154206
+                  },
+                  {
+                      "id":  "flensburg",
+                      "name":  "Flensburg",
+                      "lat":  54.795056780405,
+                      "lon":  9.43301766621292
+                  },
+                  {
+                      "id":  "foehrer_ley_nord",
+                      "name":  "Föhrer Ley, Nord",
+                      "lat":  54.796389,
+                      "lon":  8.56
+                  },
+                  {
+                      "id":  "fuesing",
+                      "name":  "Füsing",
+                      "lat":  54.535813,
+                      "lon":  9.642506
+                  },
+                  {
+                      "id":  "fynshav",
+                      "name":  "Fynshav Havn",
+                      "lat":  54.9944,
+                      "lon":  9.9856
+                  },
+                  {
+                      "id":  "geesthacht_wehr_unterpegel",
+                      "name":  "Geesthacht, Elbe, Wehr, Unterpegel",
+                      "lat":  53.423333,
+                      "lon":  10.334722
+                  },
+                  {
+                      "id":  "glueckstadt",
+                      "name":  "Glückstadt, Elbe",
+                      "lat":  53.784444,
+                      "lon":  9.409444
+                  },
+                  {
+                      "id":  "grambin",
+                      "name":  "Grambin",
+                      "lat":  53.75316,
+                      "lon":  14.02415
+                  },
+                  {
+                      "id":  "grauerort",
+                      "name":  "Grauerort, Elbe, Reede",
+                      "lat":  53.679167,
+                      "lon":  9.494722
+                  },
+                  {
+                      "id":  "greifswalder-oie",
+                      "name":  "Greifswalder Oie",
+                      "lat":  54.2413133375738,
+                      "lon":  13.9072081427742
+                  },
+                  {
+                      "id":  "greifswald-wieck",
+                      "name":  "Greifswald-Wieck",
+                      "lat":  54.0977113519667,
+                      "lon":  13.4571529234706
+                  },
+                  {
+                      "id":  "groede_anleger",
+                      "name":  "Gröde, Anleger",
+                      "lat":  54.629444,
+                      "lon":  8.729167
+                  },
+                  {
+                      "id":  "hamburg_blankenese",
+                      "name":  "Hamburg, Blankenese, Elbe, Unterfeuer",
+                      "lat":  53.557778,
+                      "lon":  9.795833
+                  },
+                  {
+                      "id":  "hamburg_cranz",
+                      "name":  "Hamburg, Cranz, Este-Sperrwerk, AP",
+                      "lat":  53.535833,
+                      "lon":  9.791667
+                  },
+                  {
+                      "id":  "hamburg_dove-elbe_einfahrt",
+                      "name":  "Hamburg, Dove-Elbe, Elbe, Einfahrt",
+                      "lat":  53.508333,
+                      "lon":  10.061667
+                  },
+                  {
+                      "id":  "hamburg_harburg",
+                      "name":  "Hamburg, Harburg, Elbe, Schleuse",
+                      "lat":  53.472778,
+                      "lon":  9.991944
+                  },
+                  {
+                      "id":  "hamburg_seemannshoeft",
+                      "name":  "Hamburg, Seemannshöft, Elbe",
+                      "lat":  53.54,
+                      "lon":  9.880833
+                  },
+                  {
+                      "id":  "hamburg_st-pauli",
+                      "name":  "Hamburg, St. Pauli, Elbe",
+                      "lat":  53.545556,
+                      "lon":  9.97
+                  },
+                  {
+                      "id":  "hamburg_zollenspieker",
+                      "name":  "Hamburg, Zollenspieker, Elbe",
+                      "lat":  53.398611,
+                      "lon":  10.185278
+                  },
+                  {
+                      "id":  "harlesiel",
+                      "name":  "Harlesiel, Hafen",
+                      "lat":  53.706944,
+                      "lon":  7.808611
+                  },
+                  {
+                      "id":  "heiligenhafen",
+                      "name":  "Heiligenhafen",
+                      "lat":  54.3729593653957,
+                      "lon":  11.0056641681444
+                  },
+                  {
+                      "id":  "helgoland_binnenhafen",
+                      "name":  "Helgoland, Binnenhafen",
+                      "lat":  54.178889,
+                      "lon":  7.89
+                  },
+                  {
+                      "id":  "hetlingen",
+                      "name":  "Hetlingen, Elbe",
+                      "lat":  53.609444,
+                      "lon":  9.584444
+                  },
+                  {
+                      "id":  "hooge_anleger",
+                      "name":  "Hooge, Anleger",
+                      "lat":  54.578611,
+                      "lon":  8.556389
+                  },
+                  {
+                      "id":  "hooksielplate",
+                      "name":  "Hooksielplate",
+                      "lat":  53.669167,
+                      "lon":  8.148611
+                  },
+                  {
+                      "id":  "hoernum_hafen",
+                      "name":  "Hörnum, Sylt, Hafen",
+                      "lat":  54.758056,
+                      "lon":  8.296111
+                  },
+                  {
+                      "id":  "husum_schleuse",
+                      "name":  "Husum, Schleuse",
+                      "lat":  54.472222,
+                      "lon":  9.024722
+                  },
+                  {
+                      "id":  "jade-weser-port",
+                      "name":  "Jade-Weser-Port",
+                      "lat":  53.601667,
+                      "lon":  8.148889
+                  },
+                  {
+                      "id":  "kappeln",
+                      "name":  "Kappeln",
+                      "lat":  54.6643839117666,
+                      "lon":  9.93793813426306
+                  },
+                  {
+                      "id":  "karlshagen",
+                      "name":  "Karlshagen",
+                      "lat":  54.1078601243791,
+                      "lon":  13.8076220385415
+                  },
+                  {
+                      "id":  "karnin",
+                      "name":  "Karnin",
+                      "lat":  53.8436648730873,
+                      "lon":  13.858494243912
+                  },
+                  {
+                      "id":  "kiel-holtenau",
+                      "name":  "Kiel-Holtenau",
+                      "lat":  54.3720866822911,
+                      "lon":  10.1570496121807
+                  },
+                  {
+                      "id":  "kloster",
+                      "name":  "Kloster",
+                      "lat":  54.5847664432537,
+                      "lon":  13.1113622406783
+                  },
+                  {
+                      "id":  "knock",
+                      "name":  "Knock, Ems",
+                      "lat":  53.327222,
+                      "lon":  7.030556
+                  },
+                  {
+                      "id":  "kollmar_kamperreihe",
+                      "name":  "Kollmar, Kamperreihe, Elbe",
+                      "lat":  53.731944,
+                      "lon":  9.460833
+                  },
+                  {
+                      "id":  "koserow",
+                      "name":  "Koserow",
+                      "lat":  54.0603783352471,
+                      "lon":  14.0008229194429
+                  },
+                  {
+                      "id":  "krueckau-sperrwerk_binnenpegel",
+                      "name":  "Krückau-Sperrwerk, Binnenpegel",
+                      "lat":  53.716389,
+                      "lon":  9.526111
+                  },
+                  {
+                      "id":  "langballigau",
+                      "name":  "Langballigau",
+                      "lat":  54.8232672918699,
+                      "lon":  9.65414099231528
+                  },
+                  {
+                      "id":  "langeoog_hafeneinfahrt",
+                      "name":  "Langeoog, Hafeneinfahrt",
+                      "lat":  53.723333,
+                      "lon":  7.501667
+                  },
+                  {
+                      "id":  "lauterbach",
+                      "name":  "Lauterbach",
+                      "lat":  54.3416033935843,
+                      "lon":  13.4996964003141
+                  },
+                  {
+                      "id":  "leda-sperrwerk_unterpegel",
+                      "name":  "Leda-Sperrwerk, Unterpegel",
+                      "lat":  53.214167,
+                      "lon":  7.474444
+                  },
+                  {
+                      "id":  "leerort",
+                      "name":  "Leerort, Ems",
+                      "lat":  53.215278,
+                      "lon":  7.426111
+                  },
+                  {
+                      "id":  "kalkgrund",
+                      "name":  "Leuchtturm Kalkgrund",
+                      "lat":  54.8245990214154,
+                      "lon":  9.8880080243174
+                  },
+                  {
+                      "id":  "kiel-leuchtturm",
+                      "name":  "Leuchtturm Kiel",
+                      "lat":  54.4995887917968,
+                      "lon":  10.2732678650434
+                  },
+                  {
+                      "id":  "leyhoern_leybucht",
+                      "name":  "Leyhörn, Leybucht",
+                      "lat":  53.549167,
+                      "lon":  7.036111
+                  },
+                  {
+                      "id":  "lippe",
+                      "name":  "Lippe",
+                      "lat":  54.336143,
+                      "lon":  10.645835
+                  },
+                  {
+                      "id":  "list_hafen",
+                      "name":  "List, Sylt, Hafen",
+                      "lat":  55.016667,
+                      "lon":  8.440556
+                  },
+                  {
+                      "id":  "luebeck",
+                      "name":  "Lübeck (Bauhof)",
+                      "lat":  53.8930077557352,
+                      "lon":  10.7030650688505
+                  },
+                  {
+                      "id":  "marienleuchte",
+                      "name":  "Marienleuchte",
+                      "lat":  54.4966302631479,
+                      "lon":  11.23887433814
+                  },
+                  {
+                      "id":  "meldorf_sperrwerk_aussenpegel",
+                      "name":  "Meldorf, Sperrwerk, Außenpegel",
+                      "lat":  54.092222,
+                      "lon":  8.949167
+                  },
+                  {
+                      "id":  "munkmarsch",
+                      "name":  "Munkmarsch, Sylt",
+                      "lat":  54.921111,
+                      "lon":  8.363333
+                  },
+                  {
+                      "id":  "neuendorf",
+                      "name":  "Neuendorf (Hafen)",
+                      "lat":  54.5244936484629,
+                      "lon":  13.0935551573537
+                  },
+                  {
+                      "id":  "neustadt",
+                      "name":  "Neustadt",
+                      "lat":  54.0965230966469,
+                      "lon":  10.8049878297893
+                  },
+                  {
+                      "id":  "neuwerk_anleger",
+                      "name":  "Neuwerk, Anleger",
+                      "lat":  53.917778,
+                      "lon":  8.486389
+                  },
+                  {
+                      "id":  "nordenham",
+                      "name":  "Nordenham, Weser, Unterfeuer",
+                      "lat":  53.464444,
+                      "lon":  8.488056
+                  },
+                  {
+                      "id":  "norderney_riffgat",
+                      "name":  "Norderney, Riffgat",
+                      "lat":  53.696389,
+                      "lon":  7.157778
+                  },
+                  {
+                      "id":  "oldenburg_drielake",
+                      "name":  "Oldenburg, Drielake, Hunte",
+                      "lat":  53.140278,
+                      "lon":  8.234167
+                  },
+                  {
+                      "id":  "osterley",
+                      "name":  "Osterley",
+                      "lat":  54.849444,
+                      "lon":  8.555833
+                  },
+                  {
+                      "id":  "otterndorf",
+                      "name":  "Otterndorf, Elbe",
+                      "lat":  53.835278,
+                      "lon":  8.870833
+                  },
+                  {
+                      "id":  "papenburg",
+                      "name":  "Papenburg, Ems",
+                      "lat":  53.108333,
+                      "lon":  7.365556
+                  },
+                  {
+                      "id":  "pellworm_anleger",
+                      "name":  "Pellworm, Anleger",
+                      "lat":  54.500833,
+                      "lon":  8.701944
+                  },
+                  {
+                      "id":  "pellworm_hoogerfaehre",
+                      "name":  "Pellworm, Hoogerfähre",
+                      "lat":  54.535556,
+                      "lon":  8.597778
+                  },
+                  {
+                      "id":  "pinnau-sperrwerk_binnenpegel",
+                      "name":  "Pinnau-Sperrwerk, Binnenpegel",
+                      "lat":  53.671111,
+                      "lon":  9.558056
+                  },
+                  {
+                      "id":  "prerow",
+                      "name":  "Prerow",
+                      "lat":  54.45899747,
+                      "lon":  12.57181925
+                  },
+                  {
+                      "id":  "pudagla",
+                      "name":  "Pudagla",
+                      "lat":  53.9805,
+                      "lon":  14.04969
+                  },
+                  {
+                      "id":  "ralswiek",
+                      "name":  "Ralswiek",
+                      "lat":  54.47516,
+                      "lon":  13.44748
+                  },
+                  {
+                      "id":  "rechtenfleth",
+                      "name":  "Rechtenfleth, Weser",
+                      "lat":  53.381111,
+                      "lon":  8.500556
+                  },
+                  {
+                      "id":  "ribnitz",
+                      "name":  "Ribnitz",
+                      "lat":  54.24741,
+                      "lon":  12.4669
+                  },
+                  {
+                      "id":  "rostock",
+                      "name":  "Rostock (Unterwarnow)",
+                      "lat":  54.0830643023035,
+                      "lon":  12.1551089607214
+                  },
+                  {
+                      "id":  "ruden",
+                      "name":  "Ruden",
+                      "lat":  54.2043478526933,
+                      "lon":  13.7719056374206
+                  },
+                  {
+                      "id":  "sassnitz",
+                      "name":  "Sassnitz",
+                      "lat":  54.5082930590658,
+                      "lon":  13.6366513556098
+                  },
+                  {
+                      "id":  "scharhoern_bake_c",
+                      "name":  "Scharhörn, Bake C",
+                      "lat":  53.97,
+                      "lon":  8.468056
+                  },
+                  {
+                      "id":  "scharhoernriff_bake_a",
+                      "name":  "Scharhörnriff, Bake A",
+                      "lat":  53.984444,
+                      "lon":  8.315278
+                  },
+                  {
+                      "id":  "schillig",
+                      "name":  "Schillig",
+                      "lat":  53.698889,
+                      "lon":  8.046944
+                  },
+                  {
+                      "id":  "schleimuende",
+                      "name":  "Schleimünde",
+                      "lat":  54.672736033682,
+                      "lon":  10.0366885843959
+                  },
+                  {
+                      "id":  "schleswig",
+                      "name":  "Schleswig",
+                      "lat":  54.5114316939266,
+                      "lon":  9.56905851883919
+                  },
+                  {
+                      "id":  "schluettsiel",
+                      "name":  "Schlüttsiel",
+                      "lat":  54.6825,
+                      "lon":  8.755
+                  },
+                  {
+                      "id":  "schulau",
+                      "name":  "Schulau, Elbe",
+                      "lat":  53.568611,
+                      "lon":  9.703333
+                  },
+                  {
+                      "id":  "sonderborg",
+                      "name":  "Sønderborg Havn",
+                      "lat":  54.9107,
+                      "lon":  9.7853
+                  },
+                  {
+                      "id":  "spieka_neufeld",
+                      "name":  "Spieka, Neufeld",
+                      "lat":  53.788056,
+                      "lon":  8.553056
+                  },
+                  {
+                      "id":  "spiekeroog",
+                      "name":  "Spiekeroog, ehem. Landungsbrücke",
+                      "lat":  53.749167,
+                      "lon":  7.681944
+                  },
+                  {
+                      "id":  "stadersand",
+                      "name":  "Stadersand, Schwinge",
+                      "lat":  53.629722,
+                      "lon":  9.526667
+                  },
+                  {
+                      "id":  "stahlbrode",
+                      "name":  "Stahlbrode",
+                      "lat":  54.2344610993266,
+                      "lon":  13.2897144931285
+                  },
+                  {
+                      "id":  "stoer-sperrwerk_aussenpegel",
+                      "name":  "Stör-Sperrwerk, Außenpegel",
+                      "lat":  53.825833,
+                      "lon":  9.401111
+                  },
+                  {
+                      "id":  "stralsund",
+                      "name":  "Stralsund",
+                      "lat":  54.3056821786853,
+                      "lon":  13.1190147979804
+                  },
+                  {
+                      "id":  "strucklahnungshoern",
+                      "name":  "Strucklahnungshörn, Nordstrand, AP",
+                      "lat":  54.498889,
+                      "lon":  8.806389
+                  },
+                  {
+                      "id":  "suederoogsand",
+                      "name":  "Süderoogsand",
+                      "lat":  54.42,
+                      "lon":  8.519167
+                  },
+                  {
+                      "id":  "swinoujscie",
+                      "name":  "Świnoujście",
+                      "lat":  53.9083,
+                      "lon":  14.2644
+                  },
+                  {
+                      "id":  "thiessow",
+                      "name":  "Thiessow",
+                      "lat":  54.280666589378,
+                      "lon":  13.7097569727335
+                  },
+                  {
+                      "id":  "timmendorf-poel",
+                      "name":  "Timmendorf (Poel)",
+                      "lat":  53.9919967667161,
+                      "lon":  11.3756421426989
+                  },
+                  {
+                      "id":  "travemuende",
+                      "name":  "Travemünde",
+                      "lat":  53.9580237174946,
+                      "lon":  10.8721815274298
+                  },
+                  {
+                      "id":  "trzebiez",
+                      "name":  "Trzebież",
+                      "lat":  53.6592,
+                      "lon":  14.5189
+                  },
+                  {
+                      "id":  "ueckermuende",
+                      "name":  "Ueckermünde",
+                      "lat":  53.750310387515,
+                      "lon":  14.0664775589393
+                  },
+                  {
+                      "id":  "wangerooge_hafen",
+                      "name":  "Wangerooge, Hafen",
+                      "lat":  53.776389,
+                      "lon":  7.868056
+                  },
+                  {
+                      "id":  "wangerooge_nord",
+                      "name":  "Wangerooge, Langes Riff, Nord",
+                      "lat":  53.806389,
+                      "lon":  7.929167
+                  },
+                  {
+                      "id":  "wangerooge_ost",
+                      "name":  "Wangerooge, Ost",
+                      "lat":  53.767222,
+                      "lon":  7.985
+                  },
+                  {
+                      "id":  "warnemuende",
+                      "name":  "Warnemünde",
+                      "lat":  54.1697309881668,
+                      "lon":  12.1033882570632
+                  },
+                  {
+                      "id":  "westerland",
+                      "name":  "Westerland, Sylt",
+                      "lat":  54.908611,
+                      "lon":  8.271111
+                  },
+                  {
+                      "id":  "wilhelmshaven_alter_vorhafen",
+                      "name":  "Wilhelmshaven, Alter Vorhafen",
+                      "lat":  53.514444,
+                      "lon":  8.145
+                  },
+                  {
+                      "id":  "wilhelmshaven_neuer_vorhafen_seeschleuse",
+                      "name":  "Wilhelmshaven, Neuer Vorhafen, Seeschleuse",
+                      "lat":  53.530278,
+                      "lon":  8.160833
+                  },
+                  {
+                      "id":  "wismar",
+                      "name":  "Wismar (Baumhaus)",
+                      "lat":  53.8987616054927,
+                      "lon":  11.4579177844637
+                  },
+                  {
+                      "id":  "wittduen_hafen",
+                      "name":  "Wittdün, Amrum, Hafen",
+                      "lat":  54.631667,
+                      "lon":  8.383889
+                  },
+                  {
+                      "id":  "wittower-faehre",
+                      "name":  "Wittower Fähre",
+                      "lat":  54.5575935956121,
+                      "lon":  13.2451345829697
+                  },
+                  {
+                      "id":  "wolgast",
+                      "name":  "Wolgast",
+                      "lat":  54.0417373644072,
+                      "lon":  13.7703795207791
+                  },
+                  {
+                      "id":  "wolin",
+                      "name":  "Wolin",
+                      "lat":  53.8381,
+                      "lon":  14.6167
+                  },
+                  {
+                      "id":  "wyk",
+                      "name":  "Wyk, Föhr",
+                      "lat":  54.693333,
+                      "lon":  8.576389
+                  },
+                  {
+                      "id":  "zingst",
+                      "name":  "Zingst (Bodden)",
+                      "lat":  54.43144,
+                      "lon":  12.68975
+                  }
+              ]
+}

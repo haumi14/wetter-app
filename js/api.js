@@ -215,16 +215,97 @@ export async function radarDatenLaden() {
 /* ====================== 5. Gezeiten (Ebbe & Flut) ========================== */
 
 /*
- * Quelle: BSH – Bundesamt für Seeschifffahrt und Hydrographie
- *   https://gezeiten.bsh.de  (amtliche Gezeitenvorausberechnung, §1 SeeAufG)
- *   - Pegelliste:  data/tides_overview.json
- *   - Tiden je Pegel: data/DE__<BshNr>_tides.json  (HW/NW mit Zeit + Höhe)
- * Die BSH sendet KEIN "Access-Control-Allow-Origin" – der direkte Browserzugriff
- * ist daher gesperrt. Wir versuchen zuerst einen gleichartigen Proxy auf unserer
- * eigenen Origin (Pfad "bsh-api/", z. B. dev-server.py oder ein nginx-rewrite),
- * dann den Direktzugriff (falls die BSH das je öffnet), und zuletzt als
- * Notnagel die Meeresspiegel-Näherung von Open-Meteo (klar gekennzeichnet).
+ * Quelle: BSH – Bundesamt für Seeschifffahrt und Hydrographie (CC BY 4.0)
+ *
+ * 1) PRIMÄR: offenes GeoJSON-Portal "gdi.bsh.de" (WaterLevelForecast).
+ *    Sendet "Access-Control-Allow-Origin: *" – funktioniert damit direkt im
+ *    Browser, auch auf der Internet-Adresse (GitHub Pages) OHNE Proxy.
+ *    Pro Pegel-Abfrage kommen amtliche HW/NW-Zeiten + Vorhersagekurve.
+ *    Die Pegelliste liegt als kleine statische Datei im App-Ordner
+ *    (data/bsh-gdi-pegel.json, 136 Pegel) – die Vollversion bei BSH ist mit
+ *    5,6 MB zu groß für den mobilen Abruf.
+ *    Werte: cm über Pegelnull (Pegel-Praxisnull, wie in der BSH-App).
+ * 2) FÜRS HEIMNETZ: die klassische Datei-API gezeiten.bsh.de braucht einen
+ *    Proxy (kein CORS, s. dev-server.py /bsh-api/…) – weiterhin nutzbar.
+ * 3) LETZTER AUSWEG: Meeresspiegel-Modellnäherung (Open-Meteo Marine),
+ *    klar als solche gekennzeichnet.
  */
+const BSH_GDI_BASIS =
+  "https://gdi.bsh.de/ldproxy/rest/services/WaterLevelForecast/collections/waterlevelforecastdata/items";
+const BSH_GDI_LIEGEREIN = 3 * 24 * 3600 * 1000;   // Cache max. 3 Tage alt werden lassen
+
+/** Die 136 BSH-Wasserstandspegel vom offenen Datenportal (statische Liste). */
+export async function bshGdiPegelLaden() {
+  try {
+    const antwort = await fetch("data/bsh-gdi-pegel.json", { cache: "no-store" });
+    if (!antwort.ok) return null;
+    const daten = await antwort.json();
+    if (!daten?.pegel?.length) return null;
+    return daten.pegel.map((p) => ({ name: p.name, gdiId: p.id, lat: p.lat, lon: p.lon }));
+  } catch { return null; }
+}
+
+/**
+ * Amtliche Tiden vom BSH-Datenportal für einen Pegel (Offline-Cache inbegriffen).
+ * @param {string} gdiId  Pegel-Kennung, z. B. "husum_schleuse"
+ * @returns {Promise<null|{station, quelle, pegelLink, referenz, tide,
+ *            vorhersageStand, offline?}>}
+ */
+export async function bshGdiLaden(gdiId) {
+  const cacheSchluessel = `bsh-gdi-${gdiId}`;
+  const parse = (json, ausCache = false) => {
+    const f = (json.features && json.features[0]) ? json.features[0] : json;
+    const pr = f?.properties;
+    if (!pr) return null;
+    const jetzt = Date.now();
+    const tide = (pr.high_water_low_water ?? [])
+      .filter((e) => e.event === "HW" || e.event === "NW")
+      .map((e) => ({
+        zeit: new Date(e.event_timestamp.replace(" ", "T")),
+        typ: e.event === "HW" ? "hoch" : "niedrig",
+        cm: Math.round(parseFloat(e.tidal_prediction_value)),
+      }))
+      .filter((e) => !isNaN(e.zeit) && e.zeit.getTime() > jetzt - 12 * 3600 * 1000)
+      .sort((a, b) => a.zeit - b.zeit);
+    if (!tide.length) return null;
+    return {
+      station: pr.gauge_label,
+      quelle: "BSH – amtliche Gezeitenvorhersage (Datenportal, CC BY 4.0)",
+      pegelLink: pr.bsh_url_waterlevel || "https://gdi.bsh.de/",
+      referenz: "Pegelnull",
+      vorhersageStand: pr.forecast_timestamp,
+      tide: tide.slice(0, 8),
+      offline: ausCache,
+    };
+  };
+  try {
+    const antwort = await fetch(`${BSH_GDI_BASIS}/${gdiId}?lang=de&f=json`, { cache: "no-store" });
+    if (!antwort.ok) throw new Error(`HTTP ${antwort.status}`);
+    const json = await antwort.json();
+    const ergebnis = parse(json);
+    if (ergebnis) {
+      try { localStorage.setItem(cacheSchluessel, JSON.stringify({ t: Date.now(), j: json })); }
+      catch { /* Speicher voll/privater Modus: egal */ }
+      return ergebnis;
+    }
+    throw new Error("keine Tiden im Datensatz");
+  } catch {
+    // Offline/Ausfall: letzten erfolgreichen Abruf verwenden (max. 3 Tage alt)
+    try {
+      const roh = localStorage.getItem(cacheSchluessel);
+      if (roh) {
+        const cache = JSON.parse(roh);
+        if (Date.now() - cache.t < BSH_GDI_LIEGEREIN) {
+          const ergebnis = parse(cache.j, true);
+          if (ergebnis) return ergebnis;
+        }
+      }
+    } catch { /* ohne Cache weiter zum nächsten Ausweg */ }
+    return null;
+  }
+}
+
+/* --- Unterbau: die klassische Datei-API (nur mit Proxy erreichbar) ------ */
 const BSH_PROXY_PFAD = "bsh-api";                          // /bsh-api/… → gezeiten.bsh.de/data/…
 const BSH_URSPRUNG   = "https://gezeiten.bsh.de/data";
 
