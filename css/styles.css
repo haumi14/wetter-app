@@ -206,6 +206,10 @@ a { color: var(--farbe-akzent); }
 .diagramm-raster { display: grid; gap: var(--abstand); }
 .diagramm-rahmen { position: relative; height: 340px; }
 .diagramm-rahmen-kurz { height: 240px; }
+/* schmaler Hinweis unter den Diagrammen (Ausschnitt/Bedienung) */
+.diagramm-ausschnitt-hinweis { font-size: 0.72rem; margin: 6px 2px 0; text-align: center; }
+/* Kleine Gezeiten-Welle */
+.wellen-rahmen { position: relative; height: 150px; margin: 8px 0 4px; }
 .diagramm-legende-hinweis {
   margin: 0 0 6px; font-size: 0.85rem; color: var(--farbe-text-abgescwaecht);
 }

@@ -197,6 +197,13 @@ async function ortLaden(ort) {
   zustand.tagIndex = 0;
   zustand.zeitraum = "tag";
   localStorage.setItem(SCHLUESSEL_LETZTER_ORTE, JSON.stringify(ort));
+  // Ort auch in die Adresszeile schreiben: Beim erneuten Öffnen (PWA-Neustart,
+  // Lesezeichen, geteilter Link) erscheint er dadurch sofort wieder.
+  try {
+    const markierung = encodeURIComponent(`${ort.name}|${ort.lat}|${ort.lon}`);
+    history.replaceState(null, "", `?ort=${markierung}${location.hash || ""}`);
+  } catch { /* egal */ }
+  eingabe.value = ort.name;
   statusAnzeigen("");
   ladeAnzeigeZeigen();
   $("tagesspule").innerHTML = '<div class="skelett"><div class="lade-balken" style="width:900px;height:84px"></div></div>';
@@ -351,6 +358,13 @@ function zeigeCharts() {
       ["temperature_2m", "precipitation", "wind_speed_10m", "wind_direction_10m",
        "precipitation_probability", "cloud_cover"]);
     const labels = temp.map((_, k) => `${String(k).padStart(2, "0")}:00`);
+    // Handys/Querformat: schmaler 6-Stunden-Ausschnitt ums aktuelle Geschehen,
+    // übrige Stunden per Wischen erreichbar (siehe charts.js).
+    const istHeute = tag === taeglich.time[0];
+    // Aktuelle Stunde am Ort (en-US liefert exakt "00"–"23"; de-DE hänge " Uhr" an!)
+    const stundeJetzt = Number(new Intl.DateTimeFormat("en-US",
+      { timeZone: zustand.vor.timezone, hour: "2-digit", hour12: false }).format(new Date())) % 24;
+    const ausschnitt = { groesse: 7, start: istHeute ? Math.max(0, stundeJetzt - 3) : 0 };
 
     const ensTag = ens ? {
       temp: stuendlichSchneide(ens.stuendlich.temperatur, tag),
@@ -360,7 +374,7 @@ function zeigeCharts() {
 
     // Kombinations-Diagramm: Temperatur (orange/cyan) + Niederschlag (dunkelblau, rechte Achse)
     zeigeChart("diagramm-temperatur", {
-      labels, yTitel: "°C", y1Titel: "mm", bewoelkung: { werte: wolken },
+      labels, yTitel: "°C", y1Titel: "mm", bewoelkung: { werte: wolken }, ausschnitt,
       hauptreihen: [
         { label: "Lufttemperatur", werte: temp, typ: "linie", farbe: FARBEN.temperaturMax,
           einheit: "°C", vorzeichen: true },
@@ -374,7 +388,7 @@ function zeigeCharts() {
       ] : [],
     });
     zeigeChart("diagramm-wind", {
-      labels, yTitel: "m/s", beiNull: true, windAchsen: true,
+      labels, yTitel: "m/s", beiNull: true, windAchsen: true, ausschnitt,
       windrichtung: { werte: windRichtung },
       hauptreihen: [{ label: "Wind in 10 m Höhe", werte: wind, typ: "linie", farbe: FARBEN.wind, einheit: "m/s" }],
       baender: ensTag ? [{ name: "Wind", p10: ensTag.wind.p10, p90: ensTag.wind.p90, farbe: FARBEN.wind, einheit: "m/s" }] : [],
@@ -389,6 +403,8 @@ function zeigeCharts() {
       return;
     }
     const tage = taeglich.time.slice(0, anzahl);
+    // Bei 16 Tagen startet das Diagramm mit 6 Tagen als Ausschnitt (wischbar).
+    const ausschnittTage = anzahl >= 12 ? { groesse: 6, start: 0 } : undefined;
     const kuerzel = tage.map((t) =>
       `${formatiereOrtszeit(t, { weekday: "short" })} ${formatiereOrtszeit(t, { day: "2-digit", month: "2-digit" })}`);
     const schnitt = (feld) => taeglich[feld].slice(0, anzahl);
@@ -510,15 +526,37 @@ async function zeigeMeerChips() {
 
 /* =============================== Start beim Laden ========================== */
 
+/** Gespeicherten Ort aus der Adresszeile lesen: ?ort=Name|lat|lon */
+function ortAusUrl() {
+  try {
+    const roh = new URLSearchParams(location.search).get("ort");
+    if (!roh) return null;
+    const [name, lat, lon] = roh.split("|");
+    const b = Number(lat), l = Number(lon);
+    if (!name || !Number.isFinite(b) || !Number.isFinite(l)) return null;
+    return { name, lat: b, lon: l };
+  } catch { return null; }
+}
+
 function initialisieren() {
   favoritenNeu();
   ROUTEanwenden();
   initialisiereGezeiten();
 
-  // Zuletzt gewählte Stadt wiederherstellen (falls vorhanden und gültig)
-  try {
-    const letzter = JSON.parse(localStorage.getItem(SCHLUESSEL_LETZTER_ORTE));
-    if (letzter?.lat != null && letzter.name) ortLaden(letzter);
-  } catch { /* bewusste kein Neuladen bei defekten Daten */ }
+  // Zuletzt gewählte Stadt wiederherstellen – in dieser Reihenfolge:
+  // 1) Ort aus der Adresszeile (Lesezeichen/geteilter Link/PWA-Neustart),
+  // 2) lokaler Speicher des Browsers, 3) erster Favorit.
+  let letzter = ortAusUrl();
+  if (!letzter) {
+    try {
+      const gespeichert = JSON.parse(localStorage.getItem(SCHLUESSEL_LETZTER_ORTE));
+      if (gespeichert?.lat != null && gespeichert.name) letzter = gespeichert;
+    } catch { /* defekte Daten ignorieren */ }
+  }
+  if (!letzter) {
+    const merks = favoriten.leseFavoriten();
+    if (merks.length) letzter = merks[0];
+  }
+  if (letzter) ortLaden(letzter);
 }
 initialisieren();

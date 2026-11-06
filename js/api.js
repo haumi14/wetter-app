@@ -268,6 +268,16 @@ export async function bshGdiLaden(gdiId) {
       .filter((e) => !isNaN(e.zeit) && e.zeit.getTime() > jetzt - 12 * 3600 * 1000)
       .sort((a, b) => a.zeit - b.zeit);
     if (!tide.length) return null;
+    // Wasserstand-Kurve (alle ~10 min) für die Wellenzeichnung: nur die
+    // nächsten ~32 Stunden, damit der Offline-Cache klein bleibt.
+    const bisJetzt = jetzt - 3 * 3600 * 1000;
+    const kurve = (pr.curve ?? [])
+      .map((c) => ({
+        zeit: new Date(String(c.timestamp).replace(" ", "T")),
+        cm: Math.round(parseFloat(c.tidal_prediction)),
+      }))
+      .filter((c) => !isNaN(c.zeit) && c.zeit.getTime() > bisJetzt && !Number.isNaN(c.cm))
+      .slice(0, 220);
     return {
       station: pr.gauge_label,
       quelle: "BSH – amtliche Gezeitenvorhersage (Datenportal, CC BY 4.0)",
@@ -275,6 +285,7 @@ export async function bshGdiLaden(gdiId) {
       referenz: "Pegelnull",
       vorhersageStand: pr.forecast_timestamp,
       tide: tide.slice(0, 8),
+      kurve,
       offline: ausCache,
     };
   };

@@ -229,6 +229,9 @@ const chartCache = new Map();
  * @param {string} canvasId
  * @param {object} k
  *   labels       – Beschriftung der X-Achse
+ *   ausschnitt   – optional { groesse: Punkte im Standard-Ausschnitt,
+ *                            start: Anfangsindex } → Diagramm startet schmal
+ *                            und ist per Finger wisch-/zoombar (s. unten)
  *   hauptreihen  – [{ label, werte, typ:'linie'|'balken', farbe, einheit,
  *                     vorzeichen?: bool (Temperatur einfärben), punktstil?, yAchse?,
  *                     nachweis?, blitz?: bool }]
@@ -341,10 +344,118 @@ export function zeigeChart(canvasId, k) {
   optionen.__windrichtung = k.windrichtung;   // { werte: [Grad …] } für das Windpfeil-Plugin
 
   chartCache.get(canvasId)?.destroy();
-  chartCache.set(canvasId, new Chart(ctx, {
+  const chart = new Chart(ctx, {
     data: { labels: k.labels, datasets: datensaetze },
     options: optionen,
-  }));
+  });
+  chartCache.set(canvasId, chart);
+  aktiviereAusschnitt(chart, ctx, k);
+}
+
+/* ------------------- Ausschnitt: wischen & zoomen -------------------------
+ * Auf kleinen Displays (Handy, besonders Querformat) ist ein 24-Stunden-
+ * Diagramm viel zu gedrängt. Deshalb startet es als kurzer Ausschnitt
+ * (z. B. 6 Stunden) und lässt sich verschieben:
+ *   · mit dem Finger wischen (horizontal)          → Ausschnitt verschieben
+ *   · zwei Finger auseinander/zusammen             → mehr/weniger sehen
+ *   · Doppeltippen                                 → alles zeigen
+ *   · Tastatur (Fokussierung mit Tab): ← → sowie + − und 0
+ * Die Y-Achse bleibt dabei unverändert ablesbar.                                   */
+function aktiviereAusschnitt(chart, canvas, k) {
+  const n = (k.labels ?? []).length;
+  const hinweis = document.getElementById(`${canvas.id}-hinweis`);
+  const minBreite = 4;
+  let breit = n, von = 0;
+  if (n >= 8 && k.ausschnitt?.groesse) {
+    breit = Math.min(Math.max(k.ausschnitt.groesse, minBreite + 1), n);
+    von = Math.min(Math.max(k.ausschnitt.start ?? 0, 0), n - breit);
+  }
+  if (!Number.isFinite(breit)) breit = n;
+  if (!Number.isFinite(von)) von = 0;   // nie mit NaN in die Achse schreiben
+  if (n < 8) {            // kurze Reihen (3/7 Tage): alles zeigen, nichts klemmen
+    if (hinweis) hinweis.textContent = "";
+    return;
+  }
+  canvas.setAttribute("tabindex", "0");
+  canvas.style.touchAction = "pan-y";   // Hoch/Runterscrollen bleibt der Seite
+
+  function anwenden() {
+    const min = Math.round(Math.min(Math.max(von, 0), n - breit));
+    chart.options.scales.x.min = min;
+    chart.options.scales.x.max = min + breit - 1;
+    chart.update("none");
+    if (hinweis) {
+      hinweis.textContent = breit >= n
+        ? "Ganzer Zeitraum sichtbar · wischen oder Doppeltipp wählt erneut einen Ausschnitt"
+        : `Ausschnitt: ${k.labels[min]}–${k.labels[min + breit - 1]} · ${breit} von ${n} `
+          + `· wischen ↔ · 2 Finger = Zoom · Doppeltipp = alles`;
+    }
+  }
+  anwenden();
+
+  const zeiger = new Map();
+  let klemme = 0, weg = 0, losgelassen = null;   // weg: Wischstrecke, losgelassen: letzter Tipp
+  const schrittBreite = () => {
+    const flaeche = chart.chartArea;
+    return Math.max(8, (flaeche.right - flaeche.left) / Math.max(1, breit - 1));
+  };
+  const verschiebe = (schritte) => {
+    von = Math.round(Math.min(Math.max(von - schritte, 0), n - breit));
+    anwenden();
+  };
+
+  canvas.addEventListener("pointerdown", (e) => {
+    zeiger.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    try { canvas.setPointerCapture(e.pointerId); } catch { /* Touchtest-Browser */ }
+    if (zeiger.size === 2) {
+      const [a, b] = [...zeiger.values()];
+      klemme = Math.max(1, Math.abs(a.x - b.x)) / Math.max(1, breit);
+    }
+    weg = 0;
+  });
+  canvas.addEventListener("pointermove", (e) => {
+    const alt = zeiger.get(e.pointerId);
+    if (!alt) return;
+    const dx = e.clientX - alt.x;
+    if (zeiger.size === 1) {
+      weg += Math.abs(dx) + Math.abs(e.clientY - alt.y);
+      alt.x = e.clientX; alt.y = e.clientY;
+      const s = dx / schrittBreite();          // Bewegung in Stunden/Tagen
+      if (s !== 0) {
+        von = Math.min(Math.max(von - s, 0), n - breit);
+        anwenden();
+      }
+    } else if (zeiger.size === 2) {
+      alt.x = e.clientX; alt.y = e.clientY;
+      const [a, b] = [...zeiger.values()];
+      const paare = Math.abs(a.x - b.x);
+      const neueBreite = Math.round(Math.min(Math.max(paare / (klemme || 1), minBreite), n));
+      if (neueBreite !== breit) {
+        const mitte = von + (breit - 1) / 2;
+        breit = neueBreite;
+        von = Math.min(Math.max(Math.round(mitte - (breit - 1) / 2), 0), n - breit);
+        anwenden();
+      }
+    }
+  });
+  const hoch = (e) => {
+    zeiger.delete(e.pointerId);
+    if (weg < 12 && n > breit) {                 // kaum Bewegung → evtl. Doppeltipp?
+      const jetzt = Date.now();
+      if (losgelassen && jetzt - losgelassen < 400) { breit = n; von = 0; anwenden(); }
+      losgelassen = jetzt;
+    }
+  };
+  canvas.addEventListener("pointerup", hoch);
+  canvas.addEventListener("pointercancel", hoch);
+  canvas.addEventListener("keydown", (e) => {
+    const pfeile = { ArrowLeft: -1, ArrowRight: 1 };
+    if (pfeile[e.key]) { verschiebe(pfeile[e.key]); e.preventDefault(); }
+    else if (e.key === "+" || e.key === "-") {
+      breit = Math.min(Math.max(breit + (e.key === "+" ? -3 : 3), minBreite), n);
+      von = Math.min(von, n - breit); anwenden(); e.preventDefault();
+    } else if (e.key === "0") { breit = n; von = 0; anwenden(); e.preventDefault(); }
+  });
 }
 
 /** Alle Charts zerstören (bei Ortswechsel/Neuaufbau). */

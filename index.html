@@ -119,6 +119,11 @@
           <label class="visuell-verborgen" for="gezeiten-pegel">Pegel auswählen</label>
           <select id="gezeiten-pegel" class="gezeiten-pegel"></select>
           <div id="gezeiten-inhalt" class="info-text"><span class="hinweis">Pegel wird geladen …</span></div>
+          <!-- Kleine Wellenkurve: Wasserstand heute + morgen (Idee aus Tide.html) -->
+          <div id="gezeiten-welle-rahmen" class="wellen-rahmen" hidden>
+            <canvas id="gezeiten-welle" role="img"
+              aria-label="Wasserstandsverlauf der nächsten 30 Stunden als Wellenkurve"></canvas>
+          </div>
           <p class="quellenzeile">Amtliche Gezeitenvorhersage:
             <a href="https://gdi.bsh.de/" rel="noopener" target="_blank">BSH-Datenportal</a>
             (Bundesamt für Seeschifffahrt und Hydrographie, CC BY 4.0)</p>
@@ -148,6 +153,7 @@
           </p>
           <div class="diagramm-rahmen"><canvas id="diagramm-temperatur" role="img"
                aria-label="Temperaturverlauf (orange über null Grad, cyan darunter) mit Niederschlagsbalken und Unsicherheitsbereichen"></canvas></div>
+          <p id="diagramm-temperatur-hinweis" class="hinweis diagramm-ausschnitt-hinweis"></p>
         </section>
 
         <section class="karte diagramm-karte" aria-labelledby="wind-titel">
@@ -172,6 +178,7 @@
           </div>
           <div class="diagramm-rahmen diagramm-rahmen-kurz"><canvas id="diagramm-wind" role="img"
                aria-label="Windgeschwindigkeit in Metern pro Sekunde als hellgrüne Linie mit Richtungspfeilen und Unsicherheitsbereich"></canvas></div>
+          <p id="diagramm-wind-hinweis" class="hinweis diagramm-ausschnitt-hinweis"></p>
         </section>
       </div>
 

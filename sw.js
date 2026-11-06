@@ -13,9 +13,9 @@
  *  · Kartenkacheln (OSM/RainViewer): Cache zuerst, begrenzt (LRU-artig).
  */
 
-const FASSADE = "wetter-fassade-v4";   // App-Shell (fest vorab hinterlegt)
-const DATEN = "wetter-daten-v4";       // letzte API-Antworten
-const KACHELN = "wetter-kacheln-v4";   // Kartenkacheln
+const FASSADE = "wetter-fassade-v5";   // App-Shell (fest vorab hinterlegt)
+const DATEN = "wetter-daten-v5";       // letzte API-Antworten
+const KACHELN = "wetter-kacheln-v5";   // Kartenkacheln
 
 const FASSADE_DATEIEN = [
   "./",
