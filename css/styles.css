@@ -494,12 +494,22 @@ ul.tidenliste li:last-child { border-bottom: 0; }
  * weißen aktuellen Wetters-Karte, also hellblau mit dunkler Schrift. */
 .meer-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
 .meer-chip {
-  display: inline-flex; align-items: center; gap: 6px;
+  display: inline-flex; flex-direction: column; align-items: flex-start; gap: 2px;
   background: #eaf2fb; color: var(--farbe-text);
-  border: 1px solid #c9dcee; border-radius: 999px; padding: 6px 14px; font-size: 0.92rem;
+  border: 1px solid #c9dcee; border-radius: 14px; padding: 6px 14px; font-size: 0.92rem;
 }
+.chip-zeile { display: flex; align-items: center; gap: 6px; }
 .meer-chip .chip-label { opacity: .8; }
 .meer-chip-ladeend { opacity: .65; }
+
+/* Blitz-Button auf der Radarseite (öffnet blitzortung.org im neuen Tab) */
+.blitz-knopf {
+  align-self: flex-start; margin-top: 8px;
+  display: inline-block; background: #fff3d6; color: #5c4400;
+  border: 1px solid #e4c67a; border-radius: 10px;
+  padding: 9px 16px; font-weight: 600; text-decoration: none;
+}
+.blitz-knopf:hover { background: #ffe9b8; }
 
 /* Bewegung reduzieren (barrierearm): Kulisse bleibt, Bewegung bleibt weg. */
 @media (prefers-reduced-motion: reduce) {

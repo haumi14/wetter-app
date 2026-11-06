@@ -516,8 +516,12 @@ async function zeigeMeerChips() {
         (meer.welleAusGrad != null ? ` aus ${kompassrichtung(meer.welleAusGrad)}` : "")
       : "";
     const herkunft = `Quelle: ${meer.quelle} · Stand: ${meer.zeit ? new Date(meer.zeit).toLocaleString("de-DE") : "unbekannt"}`;
+    // Beides in EINE Chips-Box, aber untereinander (zweizeilig) – sonst ragt
+    // die lange Kombination im Hochformat über den Bildschirmrand.
     if (wasser || welle) {
-      meerChip = `<span class="meer-chip" title="${herkunft}">${wasser}${wasser && welle ? " · " : ""}${welle}</span>`;
+      const zeile = (inhalt) => `<span class="chip-zeile">${inhalt}</span>`;
+      meerChip = `<span class="meer-chip" title="${herkunft}">` +
+        (wasser ? zeile(wasser) : "") + (welle ? zeile(welle) : "") + `</span>`;
     }
   }
   feld.innerHTML = feuchte + meerChip;

@@ -37,7 +37,7 @@ export function zeigeTagesAussicht(vor) {
   const datum = new Date().toLocaleDateString("de-DE", { weekday: "long", day: "2-digit", month: "2-digit" });
 
   const teile = [
-    `Heute, ${datum}: ${wetter.text.toLowerCase()}, ${zahl(d.temperature_2m_min[i], 0)}…${zahl(d.temperature_2m_max[i], 0)} °C.`,
+    `Heute, ${datum}: ${wetter.text}, ${zahl(d.temperature_2m_min[i], 0)}…${zahl(d.temperature_2m_max[i], 0)} °C.`,
   ];
   const regen = d.precipitation_sum[i], chance = d.precipitation_probability_max[i];
   teile.push(regen > 0.05
