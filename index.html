@@ -102,8 +102,16 @@
         </p>
       </section>
 
-      <!-- sekundäre Infos: Tagesaussicht, Sonne/Mond, Gezeiten -->
+      <!-- sekundäre Infos: Warnungen, Tagesaussicht, Sonne/Mond, Gezeiten -->
       <div class="info-raster">
+        <section class="karte info-karte" id="warnungen-karte" aria-labelledby="warnungen-titel" hidden>
+          <h2 id="warnungen-titel">⚠️ DWD-Wetterwarnungen</h2>
+          <div id="warnungen-inhalt" class="info-text"></div>
+          <p class="quellenzeile">Amtliche Warnungen des
+            <a href="https://www.dwd.de/" rel="noopener" target="_blank">Deutschen Wetterdienstes</a>
+            über <a href="https://brightsky.dev/" rel="noopener" target="_blank">Bright&nbsp;Sky</a></p>
+        </section>
+
         <section class="karte info-karte" aria-labelledby="heute-titel">
           <h2 id="heute-titel">📋 Aussichten für heute</h2>
           <p id="heute-aussicht" class="info-text"><span class="hinweis">Erst eine Stadt suchen.</span></p>
@@ -112,6 +120,14 @@
         <section class="karte info-karte" aria-labelledby="sonne-titel">
           <h2 id="sonne-titel">☀️🌙 Sonne &amp; Mond</h2>
           <div id="sonne-mond-inhalt" class="info-text"><span class="hinweis">Erst eine Stadt suchen.</span></div>
+        </section>
+
+        <section class="karte info-karte" id="station-karte" aria-labelledby="station-titel" hidden>
+          <h2 id="station-titel">📡 Messstation in der Nähe</h2>
+          <div id="station-inhalt" class="info-text"><span class="hinweis">Station wird gesucht …</span></div>
+          <p class="quellenzeile">Gemessene Werte der nächsten DWD-Station (nicht Modellrechnung):
+            <a href="https://brightsky.dev/" rel="noopener" target="_blank">Bright&nbsp;Sky</a> ·
+            <a href="https://www.dwd.de/" rel="noopener" target="_blank">DWD</a></p>
         </section>
 
         <section class="karte info-karte" aria-labelledby="gezeiten-titel">

@@ -7,6 +7,7 @@
 
 import { gezeitenPegelLaden, gezeitenLaden, bshGdiPegelLaden, bshGdiLaden, wasserstandLaden, tideAuslesen, GEZEITEN_STATIONEN } from "./api.js";
 import { wetterzustand, kompassrichtung, zahl, bftAusMs } from "./wmo.js";
+import { dwdWarnungenLaden, dwdStationLaden } from "./dwd.js";
 
 const $ = (id) => document.getElementById(id);
 
@@ -328,5 +329,82 @@ export function waehleNaechstenPegel(ort) {
       [...select.options].some((o) => o.value === pegel.schluessel)) {
     select.value = pegel.schluessel;
     ladeTiden(pegel.schluessel);
+  }
+}
+
+/* ------------------- DWD-Warnungen + Messstation (Bright Sky) ---------------- */
+
+const WARN_ZEIT = new Intl.DateTimeFormat("de-DE",
+  { weekday: "short", day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
+const STATION_ZEIT = new Intl.DateTimeFormat("de-DE", { hour: "2-digit", minute: "2-digit" });
+
+// Nur die jüngste Stadt-Anfrage darf zuletzt zeichnen (schneller Stadtwechsel).
+let dwdFolge = 0;
+
+/** Warnungen und Stationsmesswerte für eine Stadt laden und anzeigen. */
+export async function ladeDwdAnzeige(ort) {
+  const folge = ++dwdFolge;
+  const warnKarte = $("warnungen-karte"), statKarte = $("station-karte");
+  const warnFeld = $("warnungen-inhalt"), statFeld = $("station-inhalt");
+  warnKarte.hidden = true; statKarte.hidden = true;
+  if (!ort) return;
+
+  const [warnen, station] = await Promise.all([
+    dwdWarnungenLaden(ort.lat, ort.lon),
+    dwdStationLaden(ort.lat, ort.lon),
+  ]);
+  if (folge !== dwdFolge) return;   // es wurde schon eine neue Stadt angefragt
+
+  // ---- Warnungen ----
+  if (warnen) {
+    warnKarte.hidden = false;
+    if (!warnen.warnungen.length) {
+      warnFeld.innerHTML = `<p class="warn-kasten warn-frei">✅ Aktuell keine amtliche `
+        + `Wetterwarnung${warnen.zelle ? ` für ${warnen.zelle}` : ""}.</p>`;
+    } else {
+      warnFeld.innerHTML = warnen.warnungen.map((w) => {
+        const zeitraum = [
+          w.von && !isNaN(w.von) ? `ab ${WARN_ZEIT.format(w.von)}` : "",
+          w.bis && !isNaN(w.bis) ? `bis ${WARN_ZEIT.format(w.bis)}` : "",
+        ].filter(Boolean).join(" · ");
+        const details = [w.text, w.anleitung].filter(Boolean).join("\n\n");
+        return `<div class="warn-kasten" style="color:${w.stufe.farbe};background:${w.stufe.hinter};border-color:${w.stufe.rand}">
+          <strong>${w.stufe.name}: ${w.titel}</strong>
+          ${zeitraum ? `<span class="warn-zeit">${zeitraum}</span>` : ""}
+          ${details ? `<details><summary>Einzelheiten</summary><p>${details
+            .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/\n/g, "<br>")}</p></details>` : ""}
+        </div>`;
+      }).join("");
+    }
+  }
+
+  // ---- Messstation ----
+  if (station) {
+    statKarte.hidden = false;
+    const zeile = (inhalt) => `<span class="chip-zeile">${inhalt}</span>`;
+    const wind = station.windMs != null
+      ? `💨 <span class="chip-label">Wind</span> <strong>${zahl(station.windMs, 1)}&nbsp;m/s`
+        + ` (Stärke ${bftAusMs(station.windMs)})</strong>`
+        + (station.boenMs != null ? `, Böen ${zahl(station.boenMs, 1)}&nbsp;m/s` : "")
+        + (station.richtungGrad != null ? ` · ➜ aus ${kompassrichtung(station.richtungGrad)}` : "")
+      : "";
+    const box = `<span class="meer-chip station-chip">`
+      + (station.temperaturC != null
+          ? zeile(`🌡️ <span class="chip-label">Temperatur</span> <strong>${zahl(station.temperaturC, 1)}&nbsp;°C</strong>`) : "")
+      + (wind ? zeile(wind) : "")
+      + (station.druckHpa != null
+          ? zeile(`🧭 <span class="chip-label">Luftdruck</span> <strong>${zahl(station.druckHpa, 0)}&nbsp;hPa</strong>`) : "")
+      + (station.feuchte != null
+          ? zeile(`💧 <span class="chip-label">Feuchte</span> <strong>${zahl(station.feuchte, 0)}&nbsp;%</strong>`) : "")
+      + `</span>`;
+    const andere = station.stationen.length > 1
+      ? `<p class="hinweis">Weitere Stationen: `
+        + station.stationen.map((s) => `${s.name} (${zahl(s.km, 0)} km)`).join(" · ") + `</p>`
+      : "";
+    statFeld.innerHTML =
+      `<p class="hinweis">Station <strong>${station.name}</strong>`
+      + `${station.entfernungKm != null ? ` · ${zahl(station.entfernungKm, 1)} km entfernt` : ""}`
+      + `${station.zeit ? ` · gemessen ${STATION_ZEIT.format(station.zeit)} Uhr` : ""}</p>`
+      + `<div class="meer-chips">${box}</div>${andere}`;
   }
 }

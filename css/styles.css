@@ -511,6 +511,21 @@ ul.tidenliste li:last-child { border-bottom: 0; }
 }
 .blitz-knopf:hover { background: #ffe9b8; }
 
+/* DWD-Warnungen (Farben je Stufe kommen inline aus info.js) */
+.warn-kasten {
+  border: 1px solid #ddd; border-left-width: 5px; border-radius: 10px;
+  padding: 8px 10px; margin: 0 0 8px; font-size: 0.9rem;
+}
+.warn-kasten.warn-frei { border-left-color: #2e7d32; background: #eef8ef; color: #14501a; }
+.warn-kasten strong { display: block; }
+.warn-zeit { display: block; font-size: 0.8rem; margin-top: 2px; opacity: .85; }
+.warn-kasten details { margin-top: 4px; }
+.warn-kasten summary { cursor: pointer; font-size: 0.82rem; font-weight: 600; }
+.warn-kasten details p { margin: 4px 0 0; font-size: 0.82rem; white-space: normal; }
+
+/* Messstation: Werteliste wie bei den Meeres-Chips, etwas kompakter */
+.station-chip .chip-zeile { font-size: 0.88rem; }
+
 /* Bewegung reduzieren (barrierearm): Kulisse bleibt, Bewegung bleibt weg. */
 @media (prefers-reduced-motion: reduce) {
   * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }

@@ -9,7 +9,7 @@
 import { staedteSuchen, vorhersageLaden, ensembleUnsicherheitLaden, meerDatenLaden } from "./api.js";
 import { zeigeChart, chartsLoeschen, FARBEN } from "./charts.js";
 import { wetterzustand, kompassrichtung, formatiereOrtszeit, zahl, temperatur } from "./wmo.js";
-import { zeigeTagesAussicht, zeigeSonneMond, initialisiereGezeiten, waehleNaechstenPegel } from "./info.js";
+import { zeigeTagesAussicht, zeigeSonneMond, initialisiereGezeiten, waehleNaechstenPegel, ladeDwdAnzeige } from "./info.js";
 import { wetterKulisseAnwenden } from "./himmel.js";
 import * as favoriten from "./favorites.js";
 import { initialisiereRadar } from "./radar.js";
@@ -477,6 +477,7 @@ function zeigeAlles() {
   try { zeigeSonneMond(zustand.vor); } catch { /* nur Textbaustein */ }
   zeigeMeerChips();
   waehleNaechstenPegel(zustand.ort);
+  ladeDwdAnzeige(zustand.ort);   // DWD-Warnungen + Messstation (asynchron, stört nicht)
 }
 
 /* ==================== Meeres-Chips (Wasser, Welle, Feuchte) ================ */
