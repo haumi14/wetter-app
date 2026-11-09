@@ -139,6 +139,25 @@ a { color: var(--farbe-akzent); }
 .chip .chip-loeschen:hover { background: rgba(255, 255, 255, 0.35); }
 .chip-aktion { border-style: dashed; }
 
+/* ================================ Elch-Leiste ===============================
+   Wechselndes Elch-Bild direkt unter dem blauen Kopf (js/elch.js). */
+.elch-banner {
+  max-width: 1080px; margin: 0 auto; padding: 12px var(--abstand) 0;
+}
+.elch-figur {
+  margin: 0; display: flex; flex-direction: column; align-items: center; gap: 6px;
+}
+.elch-bild {
+  width: min(300px, 72vw); height: auto; aspect-ratio: 1 / 1;
+  border-radius: 18px; border: 4px solid #ffffff;
+  box-shadow: var(--schlagschatten);
+  background: #dceaf6;           /* dezenter Platzhalter-Himmel bis zum Laden */
+}
+.elch-spruch {
+  color: var(--farbe-text-abgescwaecht); font-size: 0.92rem; text-align: center;
+  min-height: 1.4em;
+}
+
 /* ================================== Karten ================================== */
 .karte {
   background: var(--farbe-karte);

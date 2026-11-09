@@ -13,7 +13,7 @@
  *  · Kartenkacheln (OSM/RainViewer): Cache zuerst, begrenzt (LRU-artig).
  */
 
-const FASSADE = "wetter-fassade-v7";   // App-Shell (fest vorab hinterlegt)
+const FASSADE = "wetter-fassade-v8";   // App-Shell (fest vorab hinterlegt)
 const DATEN = "wetter-daten-v7";       // letzte API-Antworten
 const KACHELN = "wetter-kacheln-v7";   // Kartenkacheln
 
@@ -26,6 +26,7 @@ const FASSADE_DATEIEN = [
   "js/api.js",
   "js/charts.js",
   "js/himmel.js",
+  "js/elch.js",
   "js/info.js",
   "js/dwd.js",
   "js/radar.js",

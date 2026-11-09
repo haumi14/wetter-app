@@ -11,6 +11,7 @@ import { zeigeChart, chartsLoeschen, FARBEN } from "./charts.js";
 import { wetterzustand, kompassrichtung, formatiereOrtszeit, zahl, temperatur } from "./wmo.js";
 import { zeigeTagesAussicht, zeigeSonneMond, initialisiereGezeiten, waehleNaechstenPegel, ladeDwdAnzeige } from "./info.js";
 import { wetterKulisseAnwenden } from "./himmel.js";
+import { elchAktualisieren } from "./elch.js";
 import * as favoriten from "./favorites.js";
 import { initialisiereRadar } from "./radar.js";
 
@@ -472,6 +473,8 @@ function zeigeAlles() {
   zeigeCharts();
   // Hintergrund-Kulisse passend zum aktuellen Wetter (Tag/Nacht, Regen, Sonne …)
   try { wetterKulisseAnwenden(zustand.vor.current); } catch { /* nur Deko */ }
+  // Elch-Bild unter dem blauen Kopf (nur Deko, Fehler bleiben lokal)
+  try { elchAktualisieren(zustand.vor); } catch { /* nur Bild */ }
   // Sekundärbereiche (beeinflussen die Hauptdiagramme nicht, Fehler bleiben lokal)
   try { zeigeTagesAussicht(zustand.vor); } catch { /* nur Textbaustein */ }
   try { zeigeSonneMond(zustand.vor); } catch { /* nur Textbaustein */ }
