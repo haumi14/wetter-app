@@ -383,10 +383,10 @@ export async function ladeDwdAnzeige(ort) {
     statKarte.hidden = false;
     const zeile = (inhalt) => `<span class="chip-zeile">${inhalt}</span>`;
     const wind = station.windMs != null
-      ? `💨 <span class="chip-label">Wind</span> <strong>${zahl(station.windMs, 1)}&nbsp;m/s`
-        + ` (Stärke ${bftAusMs(station.windMs)})</strong>`
-        + (station.boenMs != null ? `, Böen ${zahl(station.boenMs, 1)}&nbsp;m/s` : "")
-        + (station.richtungGrad != null ? ` · ➜ aus ${kompassrichtung(station.richtungGrad)}` : "")
+      ? `💨 <span class="chip-label">Wind</span> <strong>${zahl(station.windMs * 3.6, 0)}&nbsp;km/h`
+        + ` (Stärke&nbsp;${bftAusMs(station.windMs)})</strong>`
+        + (station.boenMs != null ? `, Böen&nbsp;${zahl(station.boenMs * 3.6, 0)}&nbsp;km/h` : "")
+        + (station.richtungGrad != null ? ` · ➜ aus&nbsp;${kompassrichtung(station.richtungGrad)}` : "")
       : "";
     const box = `<span class="meer-chip station-chip">`
       + (station.temperaturC != null
