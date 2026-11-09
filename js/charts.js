@@ -360,7 +360,7 @@ export function zeigeChart(canvasId, k) {
  * (z. B. 6 Stunden) und lässt sich verschieben:
  *   · mit dem Finger wischen (horizontal)          → Ausschnitt verschieben
  *   · zwei Finger auseinander/zusammen             → mehr/weniger sehen
- *   · Doppeltippen                                 → alles zeigen
+ *   · Doppeltippen                                 → alles zeigen – und zurück
  *   · Tastatur (Fokussierung mit Tab): ← → sowie + − und 0
  * Die Y-Achse bleibt dabei unverändert ablesbar.                                   */
 function aktiviereAusschnitt(chart, canvas, k) {
@@ -374,6 +374,9 @@ function aktiviereAusschnitt(chart, canvas, k) {
   }
   if (!Number.isFinite(breit)) breit = n;
   if (!Number.isFinite(von)) von = 0;   // nie mit NaN in die Achse schreiben
+  // Erster Ausschnitt – darauf springt der Doppeltipp aus der Totalen zurück
+  const startBreit = breit, startVon = von;
+  const StandardAusschnitt = Math.min(Math.max(Math.round(n / 3), minBreite + 1), n);
   if (n < 8) {            // kurze Reihen (3/7 Tage): alles zeigen, nichts klemmen
     if (hinweis) hinweis.textContent = "";
     return;
@@ -388,7 +391,7 @@ function aktiviereAusschnitt(chart, canvas, k) {
     chart.update("none");
     if (hinweis) {
       hinweis.textContent = breit >= n
-        ? "Ganzer Zeitraum sichtbar · wischen oder Doppeltipp wählt erneut einen Ausschnitt"
+        ? "Ganzer Zeitraum sichtbar · Doppeltipp zeigt wieder den Ausschnitt"
         : `Ausschnitt: ${k.labels[min]}–${k.labels[min + breit - 1]} · ${breit} von ${n} `
           + `· wischen ↔ · 2 Finger = Zoom · Doppeltipp = alles`;
     }
@@ -442,9 +445,20 @@ function aktiviereAusschnitt(chart, canvas, k) {
   });
   const hoch = (e) => {
     zeiger.delete(e.pointerId);
-    if (weg < 12 && n > breit) {                 // kaum Bewegung → evtl. Doppeltipp?
+    if (weg < 12) {                              // kaum Bewegung → evtl. Doppeltipp
       const jetzt = Date.now();
-      if (losgelassen && jetzt - losgelassen < 400) { breit = n; von = 0; anwenden(); }
+      if (losgelassen && jetzt - losgelassen < 400) {
+        // Umschalten: Ausschnitt ⇄ ganzer Zeitraum (immer, auch aus der Totalen)
+        if (breit >= n) {
+          breit = Math.min(Math.max(startBreit, minBreite + 1), n);
+          von = breit >= n ? 0 : Math.min(Math.max(startVon, 0), n - breit);
+        } else {
+          breit = n; von = 0;
+        }
+        anwenden();
+        losgelassen = null;                      // nicht dreifach schalten
+        return;
+      }
       losgelassen = jetzt;
     }
   };
