@@ -308,33 +308,35 @@ export function zeigeChart(canvasId, k) {
     mitSymbolen: !!k.bewoelkung || !!k.windrichtung,
   });
 
-  // Wind-Diagramm: links Beaufort (Bf, an den echten Bf-Grenzen getickt), rechts km/h.
+  // Wind-Diagramm (Werte in km/h): links Beaufort (Bf, an den echten Bf-Grenzen
+  // getickt), rechts km/h.
   if (k.windAchsen) {
     const alle = [
       ...k.hauptreihen.flatMap((r) => r.werte ?? []),
       ...(k.baender ?? []).flatMap((b) => [...(b.p10 ?? []), ...(b.p90 ?? [])]),
     ].filter((v) => v != null && !Number.isNaN(v));
-    const achsenMax = Math.max(6, Math.ceil(Math.max(6, ...alle) * 1.15 / 3) * 3);
+    const achsenMax = Math.max(20, Math.ceil(Math.max(20, ...alle) * 1.15 / 10) * 10);
     optionen.scales.y = {
       position: "left",
       min: 0, max: achsenMax, beginAtZero: true,
       title: { display: true, text: "Beaufort (Bf)", color: FARBEN.text },
       grid: { color: FARBEN.gitter },
       afterBuildTicks: (achse) => {
-        // Ticks genau an den Beaufort-Untergrenzen (m/s) – Beschriftung Bf 0…12
-        achse.ticks = [0, ...BEAUFORT_GRENZEN.filter((g) => g <= achse.max)].map((v) => ({ value: v }));
+        // Ticks genau an den Beaufort-Untergrenzen (m/s → km/h umgerechnet)
+        achse.ticks = [0, ...BEAUFORT_GRENZEN.map((g) => g * 3.6).filter((g) => g <= achse.max)]
+          .map((v) => ({ value: v }));
       },
       ticks: {
         color: FARBEN.text, autoSkip: false, includeBounds: false,
-        callback: (wert) => (wert < 0.05 ? "0"
-          : String(BEAUFORT_GRENZEN.findIndex((g) => Math.abs(g - wert) < 0.05) + 1)),
+        callback: (wert) => (wert < 0.1 ? "0"
+          : String(BEAUFORT_GRENZEN.findIndex((g) => Math.abs(g * 3.6 - wert) < 0.1) + 1)),
       },
     };
     optionen.scales.y1 = {
       position: "right",
       min: 0, max: achsenMax,
       title: { display: true, text: "km/h", color: FARBEN.wind.linie },
-      ticks: { color: FARBEN.wind.linie, callback: (wert) => d(wert * 3.6, 0) },
+      ticks: { color: FARBEN.wind.linie, callback: (wert) => d(wert, 0) },
       grid: { drawOnChartArea: false },
     };
     optionen.__windZusatz = true;

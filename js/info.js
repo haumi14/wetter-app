@@ -45,8 +45,8 @@ export function zeigeTagesAussicht(vor) {
     ? `Niederschlag rund ${zahl(regen, 1)} mm${chance != null ? ` (${zahl(chance, 0)} % Chance)` : ""}.`
     : "Weitgehend trocken.");
   if (d.wind_speed_10m_max[i] != null) {
-    teile.push(`Wind aus ${kompassrichtung(d.wind_direction_10m_dominant[i])} bis ${zahl(d.wind_speed_10m_max[i])} m/s` +
-      (boeMax != null ? `, Böen bis ${zahl(boeMax)} m/s` : "") +
+    teile.push(`Wind aus ${kompassrichtung(d.wind_direction_10m_dominant[i])} bis ${zahl(d.wind_speed_10m_max[i] * 3.6, 0)}\u00A0km/h` +
+      (boeMax != null ? `, Böen bis ${zahl(boeMax * 3.6, 0)}\u00A0km/h` : "") +
       (bf != null ? ` (Bft ${bf})` : "") + ".");
   }
   if (d.uv_index_max?.[i] != null) teile.push(`UV-Index max. ${zahl(d.uv_index_max[i], 1)}.`);

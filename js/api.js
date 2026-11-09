@@ -99,7 +99,7 @@ function perzentil(werte, p) {
  *  - stündlich: prozentile Spannen über alle Mitglieder (für Tagesansicht)
  *  - täglich:   pro Mitglied Tagesmax/-min, Summe bzw. Tagesmaximum bilden,
  *               dann P10/P90 über die Mitglieder (für 3/7/16-Tage-Ansicht)
- * Wind: Das Ensemble liefert km/h – wir rechnen nach m/s um (÷ 3,6).
+ * Wind: Das Ensemble liefert km/h – so zeigen wir den Wind auch an.
  *
  * @returns {Promise<null | object>} null, falls keine Ensembledaten verfügbar.
  */
@@ -129,8 +129,7 @@ export async function ensembleUnsicherheitLaden(lat, lon) {
   }
   const tempReihen  = memberReihen("temperature_2m");
   const regenReihen = memberReihen("precipitation");
-  const windReihen  = memberReihen("wind_speed_10m").map((reihe) =>
-    reihe.map((v) => (v == null ? null : v / 3.6))); // km/h → m/s
+  const windReihen = memberReihen("wind_speed_10m");   // bleibt in km/h – so zeigen wir den Wind an
 
   if (tempReihen.length < 3) return null; // zu wenige Mitglieder → keine Aussage
 

@@ -252,8 +252,8 @@ function zeigeAktuell() {
       </span>
     </div>
     <div class="aktuell-details">
-      <span>💨 Wind: <strong>${zahl(c.wind_speed_10m)} m/s</strong> aus ${kompassrichtung(c.wind_direction_10m)}</span>
-      <span>🌬 Böen: <strong>${zahl(c.wind_gusts_10m)} m/s</strong></span>
+      <span>💨 Wind: <strong>${zahl(c.wind_speed_10m * 3.6, 0)}&nbsp;km/h</strong> aus&nbsp;${kompassrichtung(c.wind_direction_10m)}</span>
+      <span>🌬 Böen: <strong>${zahl(c.wind_gusts_10m * 3.6, 0)}&nbsp;km/h</strong></span>
       <span>🌧 Niederschlag: <strong>${zahl(c.precipitation, 1)}&nbsp;mm</strong></span>
       <span>🔽 Luftdruck: <strong>${zahl(c.surface_pressure, 0)}&nbsp;hPa</strong></span>
     </div>`;
@@ -355,9 +355,10 @@ function zeigeCharts() {
       for (let i = i0; i < i0 + 24 && i < stuendlich.time.length; i++) schnitt.push(stuendlich[f][i]);
       return schnitt;
     });
-    const [temp, regen, wind, windRichtung, regenWhr, wolken] = werte(
+    const [temp, regen, windMs, windRichtung, regenWhr, wolken] = werte(
       ["temperature_2m", "precipitation", "wind_speed_10m", "wind_direction_10m",
        "precipitation_probability", "cloud_cover"]);
+    const wind = windMs.map((v) => (v == null ? null : Math.round(v * 36) / 10)); // m/s → km/h
     const labels = temp.map((_, k) => `${String(k).padStart(2, "0")}:00`);
     // Handys/Querformat: schmaler 6-Stunden-Ausschnitt ums aktuelle Geschehen,
     // übrige Stunden per Wischen erreichbar (siehe charts.js).
@@ -389,10 +390,10 @@ function zeigeCharts() {
       ] : [],
     });
     zeigeChart("diagramm-wind", {
-      labels, yTitel: "m/s", beiNull: true, windAchsen: true, ausschnitt,
+      labels, yTitel: "km/h", beiNull: true, windAchsen: true, ausschnitt,
       windrichtung: { werte: windRichtung },
-      hauptreihen: [{ label: "Wind in 10 m Höhe", werte: wind, typ: "linie", farbe: FARBEN.wind, einheit: "m/s" }],
-      baender: ensTag ? [{ name: "Wind", p10: ensTag.wind.p10, p90: ensTag.wind.p90, farbe: FARBEN.wind, einheit: "m/s" }] : [],
+      hauptreihen: [{ label: "Wind in 10 m Höhe", werte: wind, typ: "linie", farbe: FARBEN.wind, einheit: "km/h" }],
+      baender: ensTag ? [{ name: "Wind", p10: ensTag.wind.p10, p90: ensTag.wind.p90, farbe: FARBEN.wind, einheit: "km/h" }] : [],
     });
   } else {
     /* -------- Ansicht: 3 Tage / 1 Woche / bis 16 Tage (täglich) -------- */
@@ -411,7 +412,8 @@ function zeigeCharts() {
     const schnitt = (feld) => taeglich[feld].slice(0, anzahl);
     const tmax = schnitt("temperature_2m_max");
     const tmin = schnitt("temperature_2m_min");
-    const windMax = schnitt("wind_speed_10m_max");
+    const windMax = schnitt("wind_speed_10m_max")
+      .map((v) => (v == null ? null : Math.round(v * 36) / 10)); // m/s → km/h
     const windRichtung = schnitt("wind_direction_10m_dominant");
     const regen = schnitt("precipitation_sum");
     const regenWhr = schnitt("precipitation_probability_max");
@@ -443,10 +445,10 @@ function zeigeCharts() {
       ] : [],
     });
     zeigeChart("diagramm-wind", {
-      labels: kuerzel, yTitel: "m/s", beiNull: true, windAchsen: true,
+      labels: kuerzel, yTitel: "km/h", beiNull: true, windAchsen: true,
       windrichtung: { werte: windRichtung },
-      hauptreihen: [{ label: "Tagesmaximum Wind", werte: windMax, typ: "linie", farbe: FARBEN.wind, einheit: "m/s" }],
-      baender: ensT ? [{ name: "Wind", p10: ensT.wind.p10, p90: ensT.wind.p90, farbe: FARBEN.wind, einheit: "m/s" }] : [],
+      hauptreihen: [{ label: "Tagesmaximum Wind", werte: windMax, typ: "linie", farbe: FARBEN.wind, einheit: "km/h" }],
+      baender: ensT ? [{ name: "Wind", p10: ensT.wind.p10, p90: ensT.wind.p90, farbe: FARBEN.wind, einheit: "km/h" }] : [],
     });
 
     if (anzahl > verfuegbar) {
